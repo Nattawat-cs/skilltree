@@ -1,0 +1,77 @@
+* {
+  box-sizing: border-box;
+}
+
+html,
+body,
+#root {
+  margin: 0;
+  padding: 0;
+
+  width: 100%;
+  height: 100%;
+
+  overflow-x: hidden;
+}
+
+body {
+  background: #0d1018;
+}
+
+
+/* =========================
+   Layout หลัก
+========================= */
+
+.homepage {
+  display: flex;
+
+  width: 100%;
+  height: calc(100% - 60px);
+
+  overflow: hidden;
+}
+
+
+/* =========================
+   ฝั่งซ้าย
+========================= */
+
+.leftPage {
+  width: 70%;
+  height: 100%;
+
+  min-width: 0;
+
+  overflow: hidden;
+}
+
+
+/* =========================
+   ฝั่งขวา
+========================= */
+
+.rightPage {
+  width: 30%;
+  height: 100%;
+
+  min-width: 0;
+
+  overflow: hidden;
+
+  border-left: 1px solid #29303d;
+}
+
+
+/* =========================
+   ข้อความตอนโหลดข้อมูลไม่สำเร็จ
+========================= */
+
+.load-error {
+  padding: 40px;
+
+  color: #ff6b63;
+
+  font-size: 14px;
+}
+

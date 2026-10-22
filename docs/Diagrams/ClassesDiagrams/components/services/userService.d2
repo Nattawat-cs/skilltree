@@ -1,0 +1,7 @@
+userService: {
+  shape: class
+  label: "<<@Service>>\nUserService"
+  -userRepository: UserRepository
+  -userMapper: UserMapper
+  "+getOrCreate(response: TuVerifyResponseDTO)": UserDTO
+}

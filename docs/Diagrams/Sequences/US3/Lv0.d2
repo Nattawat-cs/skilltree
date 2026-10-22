@@ -1,0 +1,28 @@
+shape: sequence_diagram
+
+title: |md
+  # US3 Lv0 : เลือกรายวิชา
+| {near: top-center}
+
+CstuStudent: CSTU Student {
+    shape: person
+}
+System: CSTU Compass
+
+เลือกรายวิชา: {
+    CstuStudent -> System: เลือกรายวิชาที่สนใจ
+
+    not_found: "[ไม่มีรายวิชา]" {
+        System -> CstuStudent: แจ้งไม่พบรายวิชา
+    }
+
+    found: "[มีรายวิชา]" {
+        no_session: "[ยังไม่ได้เข้าสู่ระบบ]" {
+            System -> CstuStudent: ให้เข้าสู่ระบบก่อน
+        }
+
+        has_session: "[เข้าสู่ระบบแล้ว]" {
+            System -> CstuStudent: รายการ topic ตามลำดับ + สถานะเรียนแล้ว
+        }
+    }
+}

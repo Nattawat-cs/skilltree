@@ -1,0 +1,7 @@
+courseController: {
+  shape: class
+  label: "<<@RestController>>\nCourseController"
+  -courseService: CourseService
+  +getSkillTree(): ResponseEntity<SkillTreeDTO>
+  "+getCourseDetail(courseId: UUID)": ResponseEntity<CourseDetailDTO>
+}

@@ -1,0 +1,123 @@
+/* ========================================
+   กระดานลากเลื่อน / ซูม (PanZoomCanvas.jsx)
+======================================== */
+
+.pan-zoom-canvas {
+  position: relative;
+
+  width: 100%;
+  height: 100%;
+
+  /* ไม่ใช้ scroll เลื่อนด้วยการลากแทน */
+  overflow: hidden;
+
+  /* เคอร์เซอร์รูปมือ บอกว่าลากได้ */
+  cursor: grab;
+
+  /* ลากแล้วไม่ให้ไปคลุมดำเลือกตัวหนังสือ */
+  user-select: none;
+
+  /* บนมือถือ/แท็บเล็ต ไม่ให้เบราว์เซอร์เอานิ้วลากไปเลื่อนหน้าเว็บเอง */
+  touch-action: none;
+
+  background: #0d1018;
+
+  background-image:
+    radial-gradient(
+      #252b38 1px,
+      transparent 1px
+    );
+
+  background-size: 18px 18px;
+}
+
+
+/* ระหว่างกดเมาส์ค้าง (กำลังลาก) เปลี่ยนเป็นมือกำ */
+.pan-zoom-canvas:active {
+  cursor: grabbing;
+}
+
+
+/* ========================================
+   กล่องกระดานจริง (width / height / transform มาจาก PanZoomCanvas.jsx)
+   ของข้างในวางตำแหน่งอ้างอิงกล่องนี้
+======================================== */
+
+.pan-zoom-content {
+  position: absolute;
+  left: 0;
+  top: 0;
+
+  /* ซูมโดยยึดมุมซ้ายบน (สูตรใน zoomAt คิดแบบนี้) */
+  transform-origin: 0 0;
+}
+
+
+/* ตอนเลื่อนไปหาเส้นทาง ให้ค่อย ๆ เลื่อน จะได้รู้ว่าเลื่อนมาจากตรงไหน */
+.pan-zoom-content.animate {
+  transition: transform 0.35s ease;
+}
+
+
+/* ========================================
+   ปุ่มซูม มุมขวาล่าง
+======================================== */
+
+.zoom-controls {
+  position: absolute;
+  right: 16px;
+  bottom: 16px;
+
+  display: flex;
+  align-items: center;
+  gap: 4px;
+
+  padding: 4px;
+
+  border: 1px solid #293344;
+  border-radius: 10px;
+
+  background: #141925;
+
+  z-index: 3;
+}
+
+
+.zoom-controls button {
+  min-width: 36px;
+  height: 32px;
+
+  padding: 0 10px;
+
+  border: 0;
+  border-radius: 7px;
+
+  background: transparent;
+
+  color: #e9eaf2;
+
+  font-size: 16px;
+
+  cursor: pointer;
+}
+
+
+.zoom-controls button:hover {
+  background: #252b38;
+}
+
+
+.zoom-controls .zoom-fit {
+  font-size: 12px;
+}
+
+
+.zoom-value {
+  min-width: 44px;
+
+  color: #7f8999;
+
+  font-size: 12px;
+
+  text-align: center;
+}

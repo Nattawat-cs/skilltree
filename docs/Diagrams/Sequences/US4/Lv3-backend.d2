@@ -1,0 +1,68 @@
+shape: sequence_diagram
+
+title: |md
+  # US4 Lv3 (Backend methods) : Checkbox บันทึกว่าเรียน topic แล้ว
+| {near: top-center}
+
+Frontend: Frontend Container
+Controller: ":ProgressController"
+Session: ":HttpSession"
+Service: ":ProgressService"
+TopicRepo: ":TopicRepository"
+ProgressRepo: ":ProgressRepository"
+Mapper: ":ProgressMapper"
+
+ติ๊ก: {
+    Frontend -> Controller: "PUT /progress/topics/{topicId}"
+    Controller -> Session: "getAttribute(\"userId\")"
+    Session -> Controller: UUID หรือ null
+
+    no_session: "[userId == null]" {
+        Controller -> Frontend: "ResponseEntity.status(401).build()"
+    }
+
+    has_session: "[userId != null]" {
+        Controller -> Service: "markDone(userId, topicId)"
+        Service -> TopicRepo: "existsById(topicId)"
+        TopicRepo -> Service: boolean
+
+        not_found: "[!exists]" {
+            Service -> Controller: throw exception (404)
+            Controller -> Frontend: 404 Not Found
+        }
+
+        found: "[exists]" {
+            Service -> Service: "new ProgressId(userId, topicId)"
+            Service -> ProgressRepo: "findById(id)"
+            ProgressRepo -> Service: Optional<Progress>
+
+            new_progress: "[Optional ว่าง]" {
+                Service -> Service: "new Progress(id, LocalDateTime.now())"
+                Service -> ProgressRepo: "save(progress)"
+                ProgressRepo -> Service: Progress
+            }
+
+            Service -> Mapper: "toDTO(progress)"
+            Mapper -> Service: ProgressDTO
+            Service -> Controller: ProgressDTO
+            Controller -> Frontend: "ResponseEntity.ok(progressDTO)"
+        }
+    }
+}
+
+เอาติ๊กออก: {
+    Frontend -> Controller: "DELETE /progress/topics/{topicId}"
+    Controller -> Session: "getAttribute(\"userId\")"
+    Session -> Controller: UUID หรือ null
+
+    no_session: "[userId == null]" {
+        Controller -> Frontend: "ResponseEntity.status(401).build()"
+    }
+
+    has_session: "[userId != null]" {
+        Controller -> Service: "unmarkDone(userId, topicId)"
+        Service -> ProgressRepo: "deleteById(new ProgressId(userId, topicId))"
+        Service -> Controller: void
+        Controller -> Frontend: "ResponseEntity.noContent().build()"
+    }
+}

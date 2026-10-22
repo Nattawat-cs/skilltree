@@ -1,0 +1,9 @@
+courseMapper: {
+  shape: class
+  label: "<<@Component>>\nCourseMapper"
+  "+toSkillTreeDTO(courses: List<Course>, prerequisites: List<Prerequisite>)": SkillTreeDTO
+  "+toCourseItemDTO(course: Course)": CourseItemDTO
+  "+toPrerequisiteDTO(prerequisite: Prerequisite)": PrerequisiteDTO
+  "+toDetailDTO(course: Course, courseTopics: List<CourseTopic>)": CourseDetailDTO
+  "+toTopicItemDTO(courseTopic: CourseTopic)": TopicItemDTO
+}

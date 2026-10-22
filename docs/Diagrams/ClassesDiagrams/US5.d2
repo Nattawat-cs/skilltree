@@ -1,0 +1,71 @@
+vars: {
+    d2-config: {
+        layout-engine: elk
+    }
+}
+
+title: |md
+  # UserStory 5 : ดูภาพรวม progress ทั้งหมด
+| {near: top-center}
+
+ViewContainer: @components/views/viewContainer.viewContainer
+ViewControllerContainer: @components/views/viewControllerContainer.viewControllerContainer
+
+Controllers: Controllers {
+    ProgressController: @components/controllers/progressController.progressController
+}
+
+Services: Services {
+    ProgressService: @components/services/progressService.progressService
+}
+
+Mappers: Mappers {
+    ProgressMapper: @components/mappers/progressMapper.progressMapper
+}
+
+Repositories: Repositories {
+    ProgressRepository: @components/repositories/progressRepository.progressRepository
+}
+
+Entities: Entities {
+    Progress: @components/entities/progress.progress
+    ProgressId: @components/entities/progressId.progressId
+    Course: @components/entities/course.course
+    CourseTopic: @components/entities/courseTopic.courseTopic
+}
+
+DTOs: DTOs {
+    CourseProgressCount: @components/dtos/courseProgressCount.courseProgressCount
+    CourseProgressDTO: @components/dtos/courseProgressDTO.courseProgressDTO
+}
+
+Controllers.ProgressController -> Services.ProgressService: "1 .. 1\nuses"
+Services.ProgressService -> Repositories.ProgressRepository: "1 .. 1\nuses"
+Services.ProgressService -> Mappers.ProgressMapper: "1 .. 1\nuses"
+Repositories.ProgressRepository -> Entities.Progress: "1 .. *\nmanages"
+Entities.Progress -> Entities.ProgressId: "1 .. 1\nhas"
+
+ViewContainer -> ViewControllerContainer: uses {
+    style.stroke-dash: 3
+}
+ViewControllerContainer -> Controllers.ProgressController: "* .. 1\nsends" {
+    style.stroke-dash: 3
+}
+Controllers.ProgressController -> DTOs.CourseProgressDTO: returns {
+    style.stroke-dash: 3
+}
+Repositories.ProgressRepository -> Entities.Course: "joins (@Query)" {
+    style.stroke-dash: 3
+}
+Repositories.ProgressRepository -> Entities.CourseTopic: "joins (@Query)" {
+    style.stroke-dash: 3
+}
+Repositories.ProgressRepository -> DTOs.CourseProgressCount: creates {
+    style.stroke-dash: 3
+}
+Mappers.ProgressMapper -> DTOs.CourseProgressCount: reads {
+    style.stroke-dash: 3
+}
+Mappers.ProgressMapper -> DTOs.CourseProgressDTO: creates {
+    style.stroke-dash: 3
+}

@@ -1,0 +1,223 @@
+* {
+  box-sizing: border-box;
+}
+
+
+/* พื้นที่ลาก / ซูม / ปุ่มซูม อยู่ใน PanZoomCanvas.css */
+
+
+/* ========================================
+   กล่องรายวิชา
+======================================== */
+
+.course-card {
+  position: absolute;
+
+  width: 240px;
+  height: 84px;
+
+  padding: 14px;
+
+  border: 1px solid #293344;
+
+  border-radius: 13px;
+
+  background: #141925;
+
+  color: white;
+
+  text-align: left;
+
+  cursor: pointer;
+
+  z-index: 2;
+
+  transition:
+    transform 0.15s ease,
+    border-color 0.15s ease,
+    box-shadow 0.15s ease;
+}
+
+
+/* ========================================
+   Hover
+======================================== */
+
+.course-card:hover {
+  transform: translateY(-2px);
+
+  border-color: #435066;
+
+  box-shadow:
+    0 8px 20px
+    rgba(0, 0, 0, 0.3);
+}
+
+
+/* ========================================
+   วิชาที่เลือก
+======================================== */
+
+.course-card.selected {
+  border: 2px solid #e5a92e;
+
+  box-shadow:
+    0 0 0 3px
+    rgba(229, 169, 46, 0.15);
+}
+
+
+/* ========================================
+   ส่วนหัว
+======================================== */
+
+.course-card-header {
+  display: flex;
+
+  align-items: center;
+
+  gap: 8px;
+
+  margin-bottom: 9px;
+}
+
+
+/* ========================================
+   จุดหน้าชื่อวิชา
+======================================== */
+
+.course-dot {
+  width: 9px;
+  height: 9px;
+
+  flex-shrink: 0;
+
+  border-radius: 2px;
+
+  background: #55d7bd;
+}
+
+
+/* ========================================
+   ชื่อวิชา
+======================================== */
+
+.course-name {
+  color: #22C55E;
+
+  font-size: 14px;
+
+  font-weight: 700;
+
+  white-space: nowrap;
+
+  overflow: hidden;
+
+  text-overflow: ellipsis;
+}
+
+
+/* ========================================
+   ข้อมูล
+======================================== */
+
+.course-info {
+  margin-bottom: 9px;
+
+  color: #7f8999;
+
+  font-size: 11px;
+}
+
+
+/* ========================================
+   Progress Bar
+======================================== */
+
+.progress-bar {
+  width: 100%;
+
+  height: 5px;
+
+  border-radius: 10px;
+
+  background: #282f3e;
+
+  overflow: hidden;
+}
+
+
+.progress {
+  height: 100%;
+
+  border-radius: 10px;
+
+  background: #55d7bd;
+}
+
+
+/* ========================================
+   ตำแหน่งวิชา
+   ไม่ต้องเขียนที่นี่แล้ว leftpage.jsx คำนวณ left / top ให้เอง
+   จากลำดับ prerequisite (วิชาพื้นฐานอยู่ล่าง)
+======================================== */
+
+
+/* ========================================
+   Responsive
+   ความกว้างการ์ดต้องคงที่ 240px เสมอ (เส้นเชื่อมคำนวณจากค่านี้)
+   จอเล็กจึงย่อแค่ตัวอักษร
+======================================== */
+
+@media (max-width: 1100px) {
+
+  .course-name {
+    font-size: 12px;
+  }
+
+}
+
+
+@media (max-width: 850px) {
+
+  .course-name {
+    font-size: 11px;
+  }
+
+  .course-info {
+    font-size: 10px;
+  }
+
+}
+
+
+/* ========================================
+   เส้นเชื่อมรายวิชา
+======================================== */
+
+.course-lines {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  pointer-events: none;  /* ไม่บังการคลิกการ์ด */
+  z-index: 1;            /* อยู่ใต้การ์ด (z-index: 2) */
+}
+
+/* ปกติ = บาง ๆ */
+.course-line {
+  fill: none;
+  stroke: #435066;
+  stroke-width: 1;
+  transition: stroke 0.15s ease, stroke-width 0.15s ease;
+}
+
+.course-line.active {
+  stroke: #e5a92e;       /* ไฮไลต์เส้นของวิชาที่เลือก */
+  stroke-width: 2;
+}
+
+.course-line.hovered {
+  stroke: #ffd27a;       /* เส้นของวิชาที่เมาส์ชี้ = หนาสุด */
+  stroke-width: 3;
+}

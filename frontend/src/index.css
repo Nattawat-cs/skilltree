@@ -1,0 +1,17 @@
+/* ส่วนนี่ทำเพื่อไม่ให้มีขอบขาวในหน้าจอ เพราะ 
+ปกติแท็ก <body> จะมีระยะขอบ margin: 8px 
+และมีพื้นหลังเป็นสีขาวติดมาด้วยเสมอ ทำให้ตัว Upperbar
+สีดำลอยอยู่ตรงกลางและถูกล้อมรอบด้วยขอบสีขาวครับ*/
+
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+} 
+html, body {
+  margin: 0;
+  padding: 0;
+  width: 100%;
+  min-height: 100vh;
+  background-color: #667cf7;
+}

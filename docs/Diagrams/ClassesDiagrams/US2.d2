@@ -1,0 +1,90 @@
+vars: {
+    d2-config: {
+        layout-engine: elk
+    }
+}
+
+title: |md
+  # UserStory 2 : เข้าสู่ระบบด้วยบัญชี TU
+| {near: top-center}
+
+ViewContainer: @components/views/viewContainer.viewContainer
+ViewControllerContainer: @components/views/viewControllerContainer.viewControllerContainer
+
+Controllers: Controllers {
+    AuthController: @components/controllers/authController.authController
+}
+
+Services: Services {
+    AuthService: @components/services/authService.authService
+    UserService: @components/services/userService.userService
+}
+
+Clients: Clients {
+    TuApiClient: @components/clients/tuApiClient.tuApiClient
+}
+
+Mappers: Mappers {
+    UserMapper: @components/mappers/userMapper.userMapper
+}
+
+Repositories: Repositories {
+    UserRepository: @components/repositories/userRepository.userRepository
+}
+
+Entities: Entities {
+    User: @components/entities/user.user
+    Role: @components/enums/role.role
+}
+
+DTOs: DTOs {
+    LoginRequestDTO: @components/dtos/loginRequestDTO.loginRequestDTO
+    TuVerifyRequestDTO: @components/dtos/tuVerifyRequestDTO.tuVerifyRequestDTO
+    TuVerifyResponseDTO: @components/dtos/tuVerifyResponseDTO.tuVerifyResponseDTO
+    UserDTO: @components/dtos/userDTO.userDTO
+}
+
+Controllers.AuthController -> Services.AuthService: "1 .. 1\nuses"
+Services.AuthService -> Clients.TuApiClient: "1 .. 1\nuses"
+Services.AuthService -> Services.UserService: "1 .. 1\nuses"
+Services.UserService -> Repositories.UserRepository: "1 .. 1\nuses"
+Services.UserService -> Mappers.UserMapper: "1 .. 1\nuses"
+Repositories.UserRepository -> Entities.User: "1 .. *\nmanages"
+
+ViewContainer -> ViewControllerContainer: uses {
+    style.stroke-dash: 3
+}
+ViewControllerContainer -> Controllers.AuthController: "* .. 1\nsends" {
+    style.stroke-dash: 3
+}
+ViewControllerContainer -> DTOs.LoginRequestDTO: creates {
+    style.stroke-dash: 3
+}
+Controllers.AuthController -> DTOs.LoginRequestDTO: receives {
+    style.stroke-dash: 3
+}
+Controllers.AuthController -> DTOs.UserDTO: returns {
+    style.stroke-dash: 3
+}
+Clients.TuApiClient -> DTOs.TuVerifyRequestDTO: creates {
+    style.stroke-dash: 3
+}
+Clients.TuApiClient -> DTOs.TuVerifyResponseDTO: creates {
+    style.stroke-dash: 3
+}
+Services.AuthService -> DTOs.TuVerifyResponseDTO: reads {
+    style.stroke-dash: 3
+}
+Services.UserService -> Entities.User: "finds / saves" {
+    style.stroke-dash: 3
+}
+Entities.User -> Entities.Role: "1 .. 1\nhas"
+Mappers.UserMapper -> DTOs.TuVerifyResponseDTO: reads {
+    style.stroke-dash: 3
+}
+Mappers.UserMapper -> Entities.User: "creates / reads" {
+    style.stroke-dash: 3
+}
+Mappers.UserMapper -> DTOs.UserDTO: creates {
+    style.stroke-dash: 3
+}

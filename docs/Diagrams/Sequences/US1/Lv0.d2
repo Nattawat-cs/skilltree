@@ -1,0 +1,15 @@
+shape: sequence_diagram
+
+title: |md
+  # US1 Lv0 : ดูภาพรวมเพื่อหารายวิชา (skill tree)
+| {near: top-center}
+
+CstuStudent: CSTU Student {
+    shape: person
+}
+System: CSTU Compass
+
+ดู skill tree: {
+    CstuStudent -> System: เปิดหน้า skill tree
+    System -> CstuStudent: แสดงแผนผังวิชาทั้งหมด + เส้นวิชาบังคับก่อน
+}

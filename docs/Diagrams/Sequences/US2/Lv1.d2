@@ -1,0 +1,58 @@
+shape: sequence_diagram
+
+title: |md
+  # US2 Lv1 : เข้าสู่ระบบด้วยบัญชี TU
+| {near: top-center}
+
+CstuStudent: CSTU Student {
+    shape: person
+}
+Frontend: Frontend Container (Views)
+Backend: Backend Container (Spring Boot)
+TUAPI: "<<external>>\nTU API" {
+    shape: person
+}
+MySQL: MySQL Container {
+    shape: cylinder
+}
+Redis: Redis Container {
+    shape: cylinder
+}
+
+เข้าสู่ระบบ: {
+    CstuStudent -> Frontend: กรอก username + password
+    Frontend -> Backend: "POST /auth/login"
+    Backend -> TUAPI: ยืนยันตัวตน (HTTPS)
+
+    success: "[ยืนยันผ่าน และเป็นนักศึกษา]" {
+        TUAPI -> Backend: ผ่าน + ข้อมูลนักศึกษา (std_id)
+        Backend -> Redis: หาข้อมูลผู้ใช้ใน cache ด้วย std_id
+
+        cache_hit: "[cache hit]" {
+            Redis -> Backend: ข้อมูลผู้ใช้
+        }
+
+        cache_miss: "[cache miss]" {
+            Redis -> Backend: ไม่มี
+            Backend -> MySQL: หา user ด้วย std_id / สร้างใหม่ถ้ายังไม่มี
+            MySQL -> Backend: ข้อมูลผู้ใช้
+            Backend -> Redis: "เก็บข้อมูลผู้ใช้ลง cache (TTL 1 วัน)"
+        }
+
+        Backend -> Redis: เก็บ session (session id → user id, TTL 7 วัน)
+        Backend -> Frontend: "200 OK + Set-Cookie: SESSION=<id>"
+        Frontend -> CstuStudent: เข้าหน้าหลัก
+    }
+
+    fail: "[ยืนยันไม่ผ่าน]" {
+        TUAPI -> Backend: ไม่ผ่าน
+        Backend -> Frontend: "401 Unauthorized"
+        Frontend -> CstuStudent: username หรือ password ไม่ถูกต้อง
+    }
+
+    not_student: "[ไม่ใช่นักศึกษา]" {
+        TUAPI -> Backend: ผ่าน แต่ type ไม่ใช่ student
+        Backend -> Frontend: "403 Forbidden"
+        Frontend -> CstuStudent: ระบบนี้สำหรับนักศึกษาเท่านั้น
+    }
+}

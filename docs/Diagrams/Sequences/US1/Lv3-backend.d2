@@ -1,0 +1,38 @@
+shape: sequence_diagram
+
+title: |md
+  # US1 Lv3 (Backend methods) : ดูภาพรวมเพื่อหารายวิชา (skill tree)
+| {near: top-center}
+
+Frontend: Frontend Container
+CourseCtrl: ":CourseController"
+CourseSvc: ":CourseService"
+CourseRepo: ":CourseRepository"
+PrereqRepo: ":PrerequisiteRepository"
+CourseMapper: ":CourseMapper"
+Redis: Redis Container {
+    shape: cylinder
+}
+
+ดู skill tree: {
+    Frontend -> CourseCtrl: "GET /skill-tree"
+    CourseCtrl -> CourseSvc: "getSkillTree()"
+    CourseSvc -> Redis: "@Cacheable(\"skillTree\")"
+
+    cache_hit: "[cache hit]" {
+        Redis -> CourseSvc: SkillTreeDTO
+    }
+
+    cache_miss: "[cache miss]" {
+        CourseSvc -> CourseRepo: "findAll()"
+        CourseRepo -> CourseSvc: List<Course>
+        CourseSvc -> PrereqRepo: "findAll()"
+        PrereqRepo -> CourseSvc: List<Prerequisite>
+        CourseSvc -> CourseMapper: "toSkillTreeDTO(courses, prerequisites)"
+        CourseMapper -> CourseSvc: SkillTreeDTO
+        CourseSvc -> Redis: "put (TTL 1 วัน)"
+    }
+
+    CourseSvc -> CourseCtrl: SkillTreeDTO
+    CourseCtrl -> Frontend: "ResponseEntity.ok(skillTreeDTO)"
+}

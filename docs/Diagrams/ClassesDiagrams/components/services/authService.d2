@@ -1,0 +1,7 @@
+authService: {
+  shape: class
+  label: "<<@Service>>\nAuthService"
+  -tuApiClient: TuApiClient
+  -userService: UserService
+  "+login(username: String, password: String)": UserDTO
+}

@@ -1,0 +1,7 @@
+tuApiClient: {
+  shape: class
+  label: "<<@Component>>\nTuApiClient"
+  -restClient: RestClient
+  -applicationKey: String
+  "+verify(username: String, password: String)": TuVerifyResponseDTO
+}

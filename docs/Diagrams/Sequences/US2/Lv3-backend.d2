@@ -1,0 +1,69 @@
+shape: sequence_diagram
+
+title: |md
+  # US2 Lv3 (Backend methods) : เข้าสู่ระบบด้วยบัญชี TU
+| {near: top-center}
+
+Frontend: Frontend Container
+Controller: ":AuthController"
+Service: ":AuthService"
+UserSvc: ":UserService"
+Client: ":TuApiClient"
+TUAPI: "<<external>>\nTU API" {
+    shape: person
+}
+Mapper: ":UserMapper"
+Repository: ":UserRepository"
+Session: ":HttpSession"
+Redis: Redis Container {
+    shape: cylinder
+}
+
+เข้าสู่ระบบ: {
+    Frontend -> Controller: "POST /auth/login {username, password}"
+    Controller -> Service: "login(request.username(), request.password())"
+    Service -> Client: "verify(username, password)"
+    Client -> TUAPI: "POST /api/v1/auth/Ad/verify\nApplication-Key + TuVerifyRequestDTO(userName, passWord)"
+    TUAPI -> Client: JSON
+    Client -> Service: TuVerifyResponseDTO
+
+    fail: "[!response.status()]" {
+        Service -> Controller: throw exception (401)
+        Controller -> Frontend: 401 Unauthorized
+    }
+
+    not_student: "[!response.type().equals(\"student\")]" {
+        Service -> Controller: throw exception (403)
+        Controller -> Frontend: 403 Forbidden
+    }
+
+    success: "[status และเป็น student]" {
+        Service -> UserSvc: "getOrCreate(response)"
+        UserSvc -> Redis: "@Cacheable(\"users\", key = response.username())"
+
+        cache_hit: "[cache hit]" {
+            Redis -> UserSvc: UserDTO
+        }
+
+        cache_miss: "[cache miss]" {
+            UserSvc -> Repository: "findByStudentId(response.username())"
+            Repository -> UserSvc: Optional<User>
+
+            new_user: "[Optional ว่าง]" {
+                UserSvc -> Mapper: "toEntity(response)"
+                Mapper -> UserSvc: User
+                UserSvc -> Repository: "save(user)"
+                Repository -> UserSvc: User
+            }
+
+            UserSvc -> Mapper: "toDTO(user)"
+            Mapper -> UserSvc: UserDTO
+            UserSvc -> Redis: "put (TTL 1 วัน)"
+        }
+
+        UserSvc -> Service: UserDTO
+        Service -> Controller: UserDTO
+        Controller -> Session: "setAttribute(\"userId\", userDTO.id())"
+        Controller -> Frontend: "ResponseEntity.ok(userDTO)"
+    }
+}

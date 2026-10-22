@@ -1,0 +1,66 @@
+vars: {
+    d2-config: {
+        layout-engine: elk
+    }
+}
+
+title: |md
+  # UserStory 4 : Checkbox บันทึกว่าเรียน topic แล้ว
+| {near: top-center}
+
+ViewContainer: @components/views/viewContainer.viewContainer
+ViewControllerContainer: @components/views/viewControllerContainer.viewControllerContainer
+
+Controllers: Controllers {
+    ProgressController: @components/controllers/progressController.progressController
+}
+
+Services: Services {
+    ProgressService: @components/services/progressService.progressService
+}
+
+Mappers: Mappers {
+    ProgressMapper: @components/mappers/progressMapper.progressMapper
+}
+
+Repositories: Repositories {
+    ProgressRepository: @components/repositories/progressRepository.progressRepository
+    TopicRepository: @components/repositories/topicRepository.topicRepository
+}
+
+Entities: Entities {
+    Progress: @components/entities/progress.progress
+    ProgressId: @components/entities/progressId.progressId
+    Topic: @components/entities/topic.topic
+}
+
+DTOs: DTOs {
+    ProgressDTO: @components/dtos/progressDTO.progressDTO
+}
+
+Controllers.ProgressController -> Services.ProgressService: "1 .. 1\nuses"
+Services.ProgressService -> Repositories.ProgressRepository: "1 .. 1\nuses"
+Services.ProgressService -> Repositories.TopicRepository: "1 .. 1\nuses"
+Services.ProgressService -> Mappers.ProgressMapper: "1 .. 1\nuses"
+Repositories.ProgressRepository -> Entities.Progress: "1 .. *\nmanages"
+Repositories.TopicRepository -> Entities.Topic: "1 .. *\nmanages"
+Entities.Progress -> Entities.ProgressId: "1 .. 1\nhas"
+
+ViewContainer -> ViewControllerContainer: uses {
+    style.stroke-dash: 3
+}
+ViewControllerContainer -> Controllers.ProgressController: "* .. 1\nsends" {
+    style.stroke-dash: 3
+}
+Controllers.ProgressController -> DTOs.ProgressDTO: returns {
+    style.stroke-dash: 3
+}
+Services.ProgressService -> Entities.Progress: "creates / finds / deletes" {
+    style.stroke-dash: 3
+}
+Mappers.ProgressMapper -> Entities.Progress: reads {
+    style.stroke-dash: 3
+}
+Mappers.ProgressMapper -> DTOs.ProgressDTO: creates {
+    style.stroke-dash: 3
+}

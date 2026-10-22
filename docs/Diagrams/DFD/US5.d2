@@ -1,0 +1,28 @@
+vars: { d2-config: { layout-engine: elk } }
+direction: right
+cstu_student: CSTU Students
+cstu_student.shape: person
+system5-1: 5.1 ตรวจสอบ session
+system5-1.shape: circle
+system5-2: 5.2 คำนวณ progress รายวิชา
+system5-2.shape: circle
+sessions: D2 sessions (Redis)
+sessions.shape: cylinder
+courses: D6 courses (MySQL)
+courses.shape: cylinder
+course_topics: D7 relation_topic_course (MySQL)
+course_topics.shape: cylinder
+progress: D5 progress (MySQL)
+progress.shape: cylinder
+cstu_student -> system5-1: ขอดูภาพรวม progress + cookie (session id)
+system5-1 -> sessions: session id
+sessions -> system5-1: user id (ถ้ามี)
+system5-1 -> cstu_student: แจ้งให้เข้าสู่ระบบ (ไม่มี session หรือหมดอายุ)
+system5-1 -> system5-2: user id
+system5-2 -> courses: ค้นหาทุกวิชา
+courses -> system5-2: ข้อมูลวิชาทุกวิชา
+system5-2 -> course_topics: ค้นหา topic ของแต่ละวิชา
+course_topics -> system5-2: topic ของแต่ละวิชา
+system5-2 -> progress: ค้นหาด้วย user id
+progress -> system5-2: topic id ที่เรียนแล้ว
+system5-2 -> cstu_student: จำนวน topic ทั้งหมด + ที่เรียนแล้ว + เปอร์เซ็นต์ ของแต่ละวิชา

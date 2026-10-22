@@ -1,0 +1,324 @@
+* {
+  box-sizing: border-box;
+}
+
+
+/* ========================================
+   พื้นที่ Rightpage
+======================================== */
+
+.right-page {
+  width: 100%;
+  height: 100%;
+
+  background: #171a23;
+
+  color: white;
+
+  overflow-y: auto;
+}
+
+
+/* ========================================
+   ยังไม่ได้เลือกวิชา
+======================================== */
+
+.empty-course {
+  width: 100%;
+  height: 100%;
+
+  display: flex;
+
+  align-items: center;
+
+  justify-content: center;
+}
+
+
+.empty-course h2 {
+  margin: 0;
+
+  color: #20c878;
+
+  font-size: 28px;
+
+  font-weight: 500;
+}
+
+
+/* ========================================
+   รายละเอียดวิชา
+======================================== */
+
+.course-detail {
+  width: 100%;
+
+  padding: 25px 22px;
+}
+
+
+/* ========================================
+   Label
+======================================== */
+
+.detail-label {
+  margin-bottom: 8px;
+
+  color: #8b93a3;
+
+  font-size: 12px;
+}
+
+
+/* ========================================
+   ชื่อวิชา
+======================================== */
+
+.detail-title {
+  display: flex;
+
+  align-items: center;
+
+  gap: 9px;
+
+  margin: 0;
+
+  color: #22C55E;
+
+  font-size: 20px;
+
+  font-weight: 700;
+}
+
+
+/* ========================================
+   จุดหน้าชื่อ
+======================================== */
+
+.detail-dot {
+  width: 8px;
+  height: 8px;
+
+  border-radius: 2px;
+
+  background: #55d7bd;
+
+  flex-shrink: 0;
+}
+
+
+/* ========================================
+   รายละเอียด
+======================================== */
+
+.detail-info {
+  margin-top: 15px;
+
+  color: #9098a7;
+
+  font-size: 12px;
+}
+
+
+.detail-info strong {
+  color: #ffffff;
+
+  font-weight: 600;
+}
+
+
+/* ========================================
+   Progress
+======================================== */
+
+.detail-progress {
+  width: 100%;
+
+  height: 6px;
+
+  margin-top: 12px;
+
+  border-radius: 10px;
+
+  background: #2a303e;
+
+  overflow: hidden;
+}
+
+
+.detail-progress-fill {
+  height: 100%;
+
+  border-radius: 10px;
+
+  background: #55d7bd;
+}
+
+
+/* ========================================
+   Buttons
+======================================== */
+
+.detail-buttons {
+  display: flex;
+
+  justify-content: flex-end;
+
+  gap: 8px;
+
+  margin-top: 18px;
+}
+
+
+.primary-button,
+.secondary-button {
+  height: 38px;
+
+  padding: 0 14px;
+
+  border-radius: 9px;
+
+  font-size: 12px;
+
+  cursor: pointer;
+}
+
+
+.primary-button {
+  border: none;
+
+  background: #f0b52f;
+
+  color: #171a20;
+
+  font-weight: 700;
+}
+
+
+.primary-button:hover {
+  background: #ffc348;
+}
+
+
+.secondary-button {
+  border: 1px solid #363d4c;
+
+  background: transparent;
+
+  color: #ffffff;
+}
+
+
+.secondary-button:hover {
+  background: #222631;
+}
+/* ========================================
+   ส่วนแสดงผลวิชาเกี่ยวเนื่อง
+======================================== */
+
+.section-block {
+  margin-top: 20px;
+}
+
+.section-title {
+  margin-bottom: 10px;
+  color: #8b93a3;
+  font-size: 13px;
+}
+
+/* เรียงลงแนวตั้ง จะได้เลื่อนอ่านทั้งหน้าได้ ไม่ต้องเลื่อนซ้ายขวา */
+.relation-list {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+
+.relation-card {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  width: 100%;
+  padding: 8px 12px;
+  border-radius: 20px;
+  background: #10141d;
+  color: inherit;
+  font: inherit;
+  text-align: left;
+  cursor: pointer;
+}
+
+.relation-card:hover {
+  background: #151a26;
+}
+
+.prereq-card {
+  border: 1px solid #d49a24;
+}
+
+.next-card {
+  border: 1px solid #2389a0;
+}
+
+.badge {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 24px;
+  height: 24px;
+  border-radius: 50%;
+  font-size: 12px;
+  font-weight: bold;
+  flex-shrink: 0;
+}
+
+.prereq-badge {
+  background: #d49a24;
+  color: #10141d;
+}
+
+.next-badge {
+  background: #2389a0;
+  color: #ffffff;
+}
+
+.relation-text {
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+}
+
+.relation-name {
+  color: #ffffff;
+  font-size: 12px;
+  font-weight: 600;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.relation-sub {
+  color: #7f8999;
+  font-size: 10px;
+}
+
+.empty-text {
+  color: #556070;
+  font-size: 12px;
+}
+.course-description {
+  margin-top: 16px;
+  margin-bottom: 20px;
+}
+
+.description-title {
+  margin-bottom: 6px;
+  color: #8e96a8;
+  font-size: 12px;
+}
+
+.description-text {
+  color: #d7dbe5;
+  font-size: 14px;
+  line-height: 1.6;
+}

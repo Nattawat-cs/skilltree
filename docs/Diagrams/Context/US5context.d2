@@ -1,0 +1,16 @@
+vars: {
+    d2-config: {
+        layout-engine: elk
+    }
+}
+
+direction: right
+
+cstu_student: CSTU Students
+cstu_student.shape: person
+
+system: 5. ระบบภาพรวม progress
+system.shape: circle
+
+cstu_student -> system: ขอดูภาพรวม progress + session
+system -> cstu_student: progress ของแต่ละวิชา (เปอร์เซ็นต์ topic ที่เรียนแล้ว)

@@ -1,0 +1,316 @@
+/* ========================================
+   แผนผังรายหัวข้อ (Topicpage.jsx)
+   พื้นที่ลาก / ซูม อยู่ใน PanZoomCanvas.css
+======================================== */
+
+.topic-map {
+  position: relative; /* ให้แถบมุมซ้ายบน / ซ้ายล่าง ลอยทับกระดานได้ */
+
+  width: 100%;
+  height: 100%;
+}
+
+
+.topic-map-message {
+  padding: 40px;
+
+  color: #7f8999;
+
+  font-size: 14px;
+}
+
+
+/* ========================================
+   กล่องวิชา
+======================================== */
+
+.topic-box {
+  position: absolute;
+
+  border: 1px solid #293344;
+  border-radius: 14px;
+
+  background: rgba(20, 25, 37, 0.85);
+
+  z-index: 0; /* อยู่ใต้เส้น (1) และใต้หัวข้อ (2) */
+}
+
+
+/* กล่องของวิชาที่กำลังดู */
+.topic-box.focus {
+  border-color: #e5a92e;
+}
+
+
+/* กล่องวิชาที่ไม่มีหัวข้อบนเส้นทาง → จางลง */
+.topic-box.faded {
+  opacity: 0.5;
+}
+
+
+.topic-box-header {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+
+  height: 36px;
+
+  padding: 0 12px;
+
+  color: #e9eaf2;
+
+  font-size: 12px;
+}
+
+
+.topic-box-dot {
+  width: 8px;
+  height: 8px;
+
+  flex-shrink: 0;
+
+  border-radius: 2px;
+
+  background: #55d7bd;
+}
+
+
+.topic-box-name {
+  flex: 1;
+  min-width: 0;
+
+  font-weight: 700;
+
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+
+.topic-box-badge {
+  flex-shrink: 0;
+
+  padding: 1px 6px;
+
+  border: 1px solid #e5a92e;
+  border-radius: 5px;
+
+  color: #f0b52f;
+
+  font-size: 10px;
+}
+
+
+.topic-box-count {
+  flex-shrink: 0;
+
+  color: #7f8999;
+
+  font-size: 10px;
+}
+
+
+/* ========================================
+   หัวข้อ 1 ตัว
+   width / height ต้องตรงกับ NODE_WIDTH / NODE_HEIGHT ใน Topicpage.jsx
+======================================== */
+
+.topic-node {
+  position: absolute;
+
+  width: 170px;
+  height: 34px;
+
+  padding: 0 10px;
+
+  border: 1px solid #364056;
+  border-radius: 8px;
+
+  background: #10141d;
+
+  color: #c9cfdb;
+
+  font-size: 11px;
+  font-weight: 600;
+
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+
+  cursor: pointer;
+
+  z-index: 2;
+}
+
+
+.topic-node:hover {
+  border-color: #6b7891;
+
+  color: #ffffff;
+}
+
+
+/* อยู่บนเส้นทาง แต่ยังไม่รู้ = กรอบส้ม */
+.topic-node.on-path {
+  border-color: #e5a92e;
+
+  color: #ffffff;
+}
+
+
+/* รู้แล้ว = กรอบเขียว (ชนะกรอบส้ม) */
+.topic-node.done {
+  border-color: #3fbf8f;
+
+  background: #112420;
+
+  color: #8fe3c2;
+}
+
+
+/* ไม่ได้อยู่บนเส้นทางของที่เลือก → จางลง (ชี้เมาส์แล้วชัดขึ้น) */
+.topic-node.faded {
+  opacity: 0.45;
+}
+
+.topic-node.faded:hover {
+  opacity: 1;
+}
+
+
+/* หัวข้อที่เลือก = พื้นส้ม */
+.topic-node.selected {
+  border-color: #f0b52f;
+
+  background: #f0b52f;
+
+  color: #171a20;
+
+  box-shadow: 0 0 0 4px rgba(240, 181, 47, 0.2);
+}
+
+
+/* ========================================
+   เส้นเชื่อม
+======================================== */
+
+.topic-lines {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  pointer-events: none; /* ไม่บังการคลิกหัวข้อ */
+  z-index: 1;
+}
+
+
+/* ปกติ = บาง ๆ จาง ๆ */
+.topic-line {
+  fill: none;
+  stroke: #2a3140;
+  stroke-width: 0.75;
+}
+
+
+/* อยู่บนเส้นทางของที่เลือก = ส้ม หนาขึ้น */
+.topic-line.on-path {
+  stroke: #e5a92e;
+  stroke-width: 1.5;
+}
+
+
+/* ต่อเข้า/ออก หัวข้อที่เมาส์ชี้ = หนาสุด */
+.topic-line.hovered {
+  stroke: #ffd27a;
+  stroke-width: 3;
+}
+
+
+/* ========================================
+   แถบมุมซ้ายบน: กำลังดูอะไร
+======================================== */
+
+.topic-map-bar {
+  position: absolute;
+  left: 16px;
+  top: 16px;
+  right: 16px;
+
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+
+  pointer-events: none; /* ช่องว่างในแถบ ยังลากกระดานได้ */
+
+  z-index: 3;
+}
+
+
+.topic-map-label {
+  padding: 8px 12px;
+
+  border: 1px solid #293344;
+  border-radius: 9px;
+
+  background: #141925;
+
+  color: #c9cfdb;
+
+  font-size: 12px;
+}
+
+
+/* ========================================
+   วิธีอ่าน มุมซ้ายล่าง
+======================================== */
+
+.topic-map-legend {
+  position: absolute;
+  left: 16px;
+  bottom: 16px;
+
+  display: flex;
+  flex-wrap: wrap;
+  gap: 12px;
+
+  padding: 8px 12px;
+
+  border: 1px solid #293344;
+  border-radius: 9px;
+
+  background: #141925;
+
+  color: #7f8999;
+
+  font-size: 11px;
+
+  z-index: 3;
+}
+
+
+.topic-map-legend span {
+  display: flex;
+  align-items: center;
+  gap: 5px;
+}
+
+
+.legend-swatch {
+  width: 12px;
+  height: 12px;
+
+  border: 1px solid;
+  border-radius: 3px;
+}
+
+
+.legend-swatch.done {
+  border-color: #3fbf8f;
+
+  background: #112420;
+}
+
+
+.legend-swatch.on-path {
+  border-color: #e5a92e;
+}

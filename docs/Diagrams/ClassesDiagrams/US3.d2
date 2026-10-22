@@ -1,0 +1,95 @@
+vars: {
+    d2-config: {
+        layout-engine: elk
+    }
+}
+
+title: |md
+  # UserStory 3 : เลือกรายวิชา
+| {near: top-center}
+
+ViewContainer: @components/views/viewContainer.viewContainer
+ViewControllerContainer: @components/views/viewControllerContainer.viewControllerContainer
+
+Controllers: Controllers {
+    CourseController: @components/controllers/courseController.courseController
+    ProgressController: @components/controllers/progressController.progressController
+}
+
+Services: Services {
+    CourseService: @components/services/courseService.courseService
+    ProgressService: @components/services/progressService.progressService
+}
+
+Mappers: Mappers {
+    CourseMapper: @components/mappers/courseMapper.courseMapper
+    ProgressMapper: @components/mappers/progressMapper.progressMapper
+}
+
+Repositories: Repositories {
+    CourseRepository: @components/repositories/courseRepository.courseRepository
+    CourseTopicRepository: @components/repositories/courseTopicRepository.courseTopicRepository
+    ProgressRepository: @components/repositories/progressRepository.progressRepository
+}
+
+Entities: Entities {
+    Course: @components/entities/course.course
+    CourseTopic: @components/entities/courseTopic.courseTopic
+    Topic: @components/entities/topic.topic
+    Progress: @components/entities/progress.progress
+    ProgressId: @components/entities/progressId.progressId
+}
+
+DTOs: DTOs {
+    CourseDetailDTO: @components/dtos/courseDetailDTO.courseDetailDTO
+    TopicItemDTO: @components/dtos/topicItemDTO.topicItemDTO
+    ProgressDTO: @components/dtos/progressDTO.progressDTO
+}
+
+Controllers.CourseController -> Services.CourseService: "1 .. 1\nuses"
+Controllers.ProgressController -> Services.ProgressService: "1 .. 1\nuses"
+Services.CourseService -> Repositories.CourseRepository: "1 .. 1\nuses"
+Services.CourseService -> Repositories.CourseTopicRepository: "1 .. 1\nuses"
+Services.CourseService -> Mappers.CourseMapper: "1 .. 1\nuses"
+Services.ProgressService -> Repositories.ProgressRepository: "1 .. 1\nuses"
+Services.ProgressService -> Mappers.ProgressMapper: "1 .. 1\nuses"
+Repositories.CourseRepository -> Entities.Course: "1 .. *\nmanages"
+Repositories.CourseTopicRepository -> Entities.CourseTopic: "1 .. *\nmanages"
+Repositories.ProgressRepository -> Entities.Progress: "1 .. *\nmanages"
+Entities.CourseTopic -> Entities.Topic: "* .. 1\nrefers to"
+Entities.Progress -> Entities.ProgressId: "1 .. 1\nhas"
+DTOs.CourseDetailDTO -> DTOs.TopicItemDTO: "1 .. *\ncontains"
+
+ViewContainer -> ViewControllerContainer: uses {
+    style.stroke-dash: 3
+}
+ViewControllerContainer -> Controllers.CourseController: "* .. 1\nsends" {
+    style.stroke-dash: 3
+}
+ViewControllerContainer -> Controllers.ProgressController: "* .. 1\nsends" {
+    style.stroke-dash: 3
+}
+Controllers.CourseController -> DTOs.CourseDetailDTO: returns {
+    style.stroke-dash: 3
+}
+Controllers.ProgressController -> DTOs.ProgressDTO: returns {
+    style.stroke-dash: 3
+}
+Mappers.CourseMapper -> Entities.Course: reads {
+    style.stroke-dash: 3
+}
+Mappers.CourseMapper -> Entities.CourseTopic: reads {
+    style.stroke-dash: 3
+}
+Mappers.CourseMapper -> DTOs.CourseDetailDTO: creates {
+    style.stroke-dash: 3
+}
+Mappers.CourseMapper -> DTOs.TopicItemDTO: creates {
+    style.stroke-dash: 3
+}
+Mappers.ProgressMapper -> Entities.Progress: reads {
+    style.stroke-dash: 3
+}
+Mappers.ProgressMapper -> DTOs.ProgressDTO: creates {
+    style.stroke-dash: 3
+}

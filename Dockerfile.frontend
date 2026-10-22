@@ -1,0 +1,26 @@
+# Base image
+FROM node:22-alpine AS base
+WORKDIR /app
+
+# Install dependencies
+FROM base AS deps
+COPY frontend/package.json frontend/package-lock.json ./
+RUN npm ci
+
+# Development
+FROM deps AS development
+COPY frontend/ ./
+EXPOSE 5173
+CMD ["npm", "run", "dev", "--", "--host", "0.0.0.0"]
+
+# Build frontend for production
+FROM deps AS build
+COPY frontend/ ./
+RUN npm run build
+
+# Production web server
+FROM httpd:2.4-alpine AS production
+COPY apache.conf /usr/local/apache2/conf/extra/apache.conf
+RUN echo "Include conf/extra/apache.conf" >> /usr/local/apache2/conf/httpd.conf
+COPY --from=build /app/dist/ /usr/local/apache2/htdocs/
+EXPOSE 80

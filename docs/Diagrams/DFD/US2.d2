@@ -1,0 +1,44 @@
+vars: {
+    d2-config: {
+        layout-engine: elk
+    }
+}
+
+direction: right
+
+cstu_student: CSTU Students
+cstu_student.shape: person
+
+tu_api: TU API
+tu_api.shape: person
+
+system2-1: 2.1 ยืนยันตัวตนด้วยบัญชี TU
+system2-1.shape: circle
+system2-2: 2.2 จัดการบัญชีผู้ใช้
+system2-2.shape: circle
+system2-3: 2.3 สร้าง session
+system2-3.shape: circle
+
+users: D1 users (MySQL)
+users.shape: cylinder
+
+sessions: D2 sessions (Redis)
+sessions.shape: cylinder
+
+user_cache: D3 user cache (Redis)
+user_cache.shape: cylinder
+
+cstu_student -> system2-1: username + password
+system2-3 -> cstu_student: ข้อมูลผู้ใช้ + cookie (session id)
+system2-1 -> tu_api: username + password
+tu_api -> system2-1: ผลยืนยันตัวตน + ข้อมูลนักศึกษา
+system2-1 -> cstu_student: แจ้งเข้าสู่ระบบไม่สำเร็จ (ยืนยันไม่ผ่าน หรือ ไม่ใช่นักศึกษา)
+
+system2-1 -> system2-2: ข้อมูลนักศึกษา
+system2-2 -> user_cache: ค้นหาด้วย std_id / เก็บข้อมูลผู้ใช้ (TTL 1 วัน)
+user_cache -> system2-2: ข้อมูลผู้ใช้ (ถ้ามี)
+system2-2 -> users: ค้นหาด้วย std_id / เพิ่มถ้ายังไม่มี (เมื่อ cache ไม่มี)
+users -> system2-2: ข้อมูลผู้ใช้
+
+system2-2 -> system2-3: ข้อมูลผู้ใช้
+system2-3 -> sessions: session id + user id (TTL 7 วัน)

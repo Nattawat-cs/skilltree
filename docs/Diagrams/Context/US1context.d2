@@ -1,0 +1,16 @@
+vars: {
+    d2-config: {
+        layout-engine: elk
+    }
+}
+
+direction: right
+
+cstu_student: CSTU Students
+cstu_student.shape: person
+
+system: 1. ระบบแสดง skill tree
+system.shape: circle
+
+cstu_student -> system: ขอดู skill tree
+system -> cstu_student: รายวิชาทั้งหมด + เส้นวิชาบังคับก่อน

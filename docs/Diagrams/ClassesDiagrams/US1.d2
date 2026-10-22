@@ -1,0 +1,76 @@
+vars: {
+    d2-config: {
+        layout-engine: elk
+    }
+}
+
+title: |md
+  # UserStory 1 : ดูภาพรวมเพื่อหารายวิชา (skill tree)
+| {near: top-center}
+
+ViewContainer: @components/views/viewContainer.viewContainer
+ViewControllerContainer: @components/views/viewControllerContainer.viewControllerContainer
+
+Controllers: Controllers {
+    CourseController: @components/controllers/courseController.courseController
+}
+
+Services: Services {
+    CourseService: @components/services/courseService.courseService
+}
+
+Mappers: Mappers {
+    CourseMapper: @components/mappers/courseMapper.courseMapper
+}
+
+Repositories: Repositories {
+    CourseRepository: @components/repositories/courseRepository.courseRepository
+    PrerequisiteRepository: @components/repositories/prerequisiteRepository.prerequisiteRepository
+}
+
+Entities: Entities {
+    Course: @components/entities/course.course
+    Prerequisite: @components/entities/prerequisite.prerequisite
+}
+
+DTOs: DTOs {
+    SkillTreeDTO: @components/dtos/skillTreeDTO.skillTreeDTO
+    CourseItemDTO: @components/dtos/courseItemDTO.courseItemDTO
+    PrerequisiteDTO: @components/dtos/prerequisiteDTO.prerequisiteDTO
+}
+
+Controllers.CourseController -> Services.CourseService: "1 .. 1\nuses"
+Services.CourseService -> Repositories.CourseRepository: "1 .. 1\nuses"
+Services.CourseService -> Repositories.PrerequisiteRepository: "1 .. 1\nuses"
+Services.CourseService -> Mappers.CourseMapper: "1 .. 1\nuses"
+Repositories.CourseRepository -> Entities.Course: "1 .. *\nmanages"
+Repositories.PrerequisiteRepository -> Entities.Prerequisite: "1 .. *\nmanages"
+Entities.Prerequisite -> Entities.Course: "* .. 1\ncourseId"
+Entities.Prerequisite -> Entities.Course: "* .. 1\nprerequisiteId"
+DTOs.SkillTreeDTO -> DTOs.CourseItemDTO: "1 .. *\ncontains"
+DTOs.SkillTreeDTO -> DTOs.PrerequisiteDTO: "1 .. *\ncontains"
+
+ViewContainer -> ViewControllerContainer: uses {
+    style.stroke-dash: 3
+}
+ViewControllerContainer -> Controllers.CourseController: "* .. 1\nsends" {
+    style.stroke-dash: 3
+}
+Controllers.CourseController -> DTOs.SkillTreeDTO: returns {
+    style.stroke-dash: 3
+}
+Mappers.CourseMapper -> Entities.Course: reads {
+    style.stroke-dash: 3
+}
+Mappers.CourseMapper -> Entities.Prerequisite: reads {
+    style.stroke-dash: 3
+}
+Mappers.CourseMapper -> DTOs.SkillTreeDTO: creates {
+    style.stroke-dash: 3
+}
+Mappers.CourseMapper -> DTOs.CourseItemDTO: creates {
+    style.stroke-dash: 3
+}
+Mappers.CourseMapper -> DTOs.PrerequisiteDTO: creates {
+    style.stroke-dash: 3
+}

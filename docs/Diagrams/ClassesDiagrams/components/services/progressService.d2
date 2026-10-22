@@ -1,0 +1,11 @@
+progressService: {
+  shape: class
+  label: "<<@Service>>\nProgressService"
+  -progressRepository: ProgressRepository
+  -topicRepository: TopicRepository
+  -progressMapper: ProgressMapper
+  "+getProgress(userId: UUID)": List<ProgressDTO>
+  "+getCourseProgress(userId: UUID)": List<CourseProgressDTO>
+  "+markDone(userId: UUID, topicId: UUID)": ProgressDTO
+  "+unmarkDone(userId: UUID, topicId: UUID)": void
+}

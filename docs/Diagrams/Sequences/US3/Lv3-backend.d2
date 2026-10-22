@@ -1,0 +1,73 @@
+shape: sequence_diagram
+
+title: |md
+  # US3 Lv3 (Backend methods) : เลือกรายวิชา
+| {near: top-center}
+
+Frontend: Frontend Container
+CourseCtrl: ":CourseController"
+CourseSvc: ":CourseService"
+CourseRepo: ":CourseRepository"
+CourseTopicRepo: ":CourseTopicRepository"
+CourseMapper: ":CourseMapper"
+ProgressCtrl: ":ProgressController"
+Session: ":HttpSession"
+ProgressSvc: ":ProgressService"
+ProgressRepo: ":ProgressRepository"
+ProgressMapper: ":ProgressMapper"
+Redis: Redis Container {
+    shape: cylinder
+}
+
+ดูรายละเอียดวิชา: {
+    Frontend -> CourseCtrl: "GET /courses/{courseId}"
+    CourseCtrl -> CourseSvc: "getCourseDetail(courseId)"
+    CourseSvc -> Redis: "@Cacheable(\"courseDetails\", key = courseId)"
+
+    cache_hit: "[cache hit]" {
+        Redis -> CourseSvc: CourseDetailDTO
+    }
+
+    cache_miss: "[cache miss]" {
+        CourseSvc -> CourseRepo: "findById(courseId)"
+        CourseRepo -> CourseSvc: Optional<Course>
+
+        not_found: "[Optional ว่าง]" {
+            CourseSvc -> CourseCtrl: throw exception (404)
+            CourseCtrl -> Frontend: 404 Not Found
+        }
+
+        found: "[มี Course]" {
+            CourseSvc -> CourseTopicRepo: "findByCourseIdOrderBySeqNoAsc(courseId)"
+            CourseTopicRepo -> CourseSvc: List<CourseTopic>
+            CourseSvc -> CourseMapper: "toDetailDTO(course, courseTopics)"
+            CourseMapper -> CourseSvc: CourseDetailDTO
+            CourseSvc -> Redis: "put (TTL 1 วัน)"
+        }
+    }
+
+    ok: "[มีวิชา]" {
+        CourseSvc -> CourseCtrl: CourseDetailDTO
+        CourseCtrl -> Frontend: "ResponseEntity.ok(courseDetailDTO)"
+    }
+}
+
+ดูสถานะเรียนแล้ว: {
+    Frontend -> ProgressCtrl: "GET /progress"
+    ProgressCtrl -> Session: "getAttribute(\"userId\")"
+    Session -> ProgressCtrl: UUID หรือ null
+
+    no_session: "[userId == null]" {
+        ProgressCtrl -> Frontend: "ResponseEntity.status(401).build()"
+    }
+
+    has_session: "[userId != null]" {
+        ProgressCtrl -> ProgressSvc: "getProgress(userId)"
+        ProgressSvc -> ProgressRepo: "findByIdUserId(userId)"
+        ProgressRepo -> ProgressSvc: List<Progress>
+        ProgressSvc -> ProgressMapper: "toDTO(progress) ทีละตัว"
+        ProgressMapper -> ProgressSvc: ProgressDTO
+        ProgressSvc -> ProgressCtrl: List<ProgressDTO>
+        ProgressCtrl -> Frontend: "ResponseEntity.ok(progressDTOs)"
+    }
+}

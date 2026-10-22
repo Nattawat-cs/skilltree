@@ -1,0 +1,6 @@
+progressRepository: {
+  shape: class
+  label: "<<JpaRepository>>\nProgressRepository"
+  "+findByIdUserId(userId: UUID)": List<Progress>
+  "+findCourseProgressCounts(userId: UUID)": List<CourseProgressCount>
+}

@@ -1,0 +1,38 @@
+shape: sequence_diagram
+
+title: |md
+  # US4 Lv0 : Checkbox บันทึกว่าเรียน topic แล้ว
+| {near: top-center}
+
+CstuStudent: CSTU Student {
+    shape: person
+}
+System: CSTU Compass
+
+ติ๊ก: {
+    CstuStudent -> System: ติ๊ก checkbox ของ topic
+
+    no_session: "[ยังไม่ได้เข้าสู่ระบบ]" {
+        System -> CstuStudent: ให้เข้าสู่ระบบก่อน
+    }
+
+    not_found: "[ไม่พบ topic]" {
+        System -> CstuStudent: แจ้งไม่พบ topic
+    }
+
+    success: "[เข้าสู่ระบบแล้ว และมี topic]" {
+        System -> CstuStudent: topic เป็น เรียนแล้ว
+    }
+}
+
+เอาติ๊กออก: {
+    CstuStudent -> System: เอาติ๊กออกจาก checkbox ของ topic
+
+    no_session: "[ยังไม่ได้เข้าสู่ระบบ]" {
+        System -> CstuStudent: ให้เข้าสู่ระบบก่อน
+    }
+
+    success: "[เข้าสู่ระบบแล้ว]" {
+        System -> CstuStudent: topic เป็น ยังไม่เรียน
+    }
+}

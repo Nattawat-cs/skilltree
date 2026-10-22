@@ -1,0 +1,38 @@
+shape: sequence_diagram
+
+title: |md
+  # US5 Lv1 : ดูภาพรวม progress ทั้งหมด
+| {near: top-center}
+
+CstuStudent: CSTU Student {
+    shape: person
+}
+Frontend: Frontend Container (Views)
+Backend: Backend Container (Spring Boot)
+MySQL: MySQL Container {
+    shape: cylinder
+}
+Redis: Redis Container {
+    shape: cylinder
+}
+
+ดูภาพรวม: {
+    CstuStudent -> Frontend: เปิดหน้าภาพรวม progress
+    Frontend -> Backend: "GET /progress/courses + Cookie: SESSION=<id>"
+    Backend -> Redis: โหลด session ด้วย session id
+
+    no_session: "[ไม่มี session หรือหมดอายุ]" {
+        Redis -> Backend: ไม่มี
+        Backend -> Frontend: "401 Unauthorized"
+        Frontend -> CstuStudent: ไปหน้าเข้าสู่ระบบ
+    }
+
+    has_session: "[มี session]" {
+        Redis -> Backend: user id
+        Backend -> MySQL: นับ topic ทั้งหมดและที่เรียนแล้วของทุกวิชา (query เดียว ไม่ใช้ cache)
+        MySQL -> Backend: จำนวนรายวิชา
+        Backend -> Backend: คำนวณเปอร์เซ็นต์
+        Backend -> Frontend: "200 OK (List<CourseProgressDTO>)"
+        Frontend -> CstuStudent: แถบ progress ของแต่ละวิชา
+    }
+}

@@ -1,0 +1,58 @@
+ViewContainer -> ViewControllerContainer: uses {
+    style.stroke-dash: 3
+}
+Controllers.CourseController -> Services.CourseService: "1 .. 1\nuses"
+Services.CourseService -> Repositories.CourseRepository: "1 .. 1\nuses"
+Services.CourseService -> Repositories.PrerequisiteRepository: "1 .. 1\nuses"
+Services.CourseService -> Mappers.CourseMapper: "1 .. 1\nuses"
+Repositories.CourseRepository -> Entities.Course: "1 .. *\nmanages"
+Repositories.PrerequisiteRepository -> Entities.Prerequisite: "1 .. *\nmanages"
+Entities.Prerequisite -> Entities.Course: "* .. 1\ncourseId"
+Entities.Prerequisite -> Entities.Course: "* .. 1\nprerequisiteId"
+DTOs.SkillTreeDTO -> DTOs.CourseItemDTO: "1 .. *\ncontains"
+DTOs.SkillTreeDTO -> DTOs.PrerequisiteDTO: "1 .. *\ncontains"
+Controllers.AuthController -> Services.AuthService: "1 .. 1\nuses"
+Services.AuthService -> Clients.TuApiClient: "1 .. 1\nuses"
+Services.AuthService -> Services.UserService: "1 .. 1\nuses"
+Services.UserService -> Repositories.UserRepository: "1 .. 1\nuses"
+Services.UserService -> Mappers.UserMapper: "1 .. 1\nuses"
+Repositories.UserRepository -> Entities.User: "1 .. *\nmanages"
+Entities.User -> Entities.Role: "1 .. 1\nhas"
+Controllers.ProgressController -> Services.ProgressService: "1 .. 1\nuses"
+Services.CourseService -> Repositories.CourseTopicRepository: "1 .. 1\nuses"
+Services.ProgressService -> Repositories.ProgressRepository: "1 .. 1\nuses"
+Services.ProgressService -> Mappers.ProgressMapper: "1 .. 1\nuses"
+Repositories.CourseTopicRepository -> Entities.CourseTopic: "1 .. *\nmanages"
+Repositories.ProgressRepository -> Entities.Progress: "1 .. *\nmanages"
+Entities.CourseTopic -> Entities.Topic: "* .. 1\nrefers to"
+Entities.Progress -> Entities.ProgressId: "1 .. 1\nhas"
+DTOs.CourseDetailDTO -> DTOs.TopicItemDTO: "1 .. *\ncontains"
+Services.ProgressService -> Repositories.TopicRepository: "1 .. 1\nuses"
+Repositories.TopicRepository -> Entities.Topic: "1 .. *\nmanages"
+ViewControllerContainer -> Controllers.CourseController: "* .. 1\nsends" {
+    style.stroke-dash: 3
+}
+Controllers.CourseController -> DTOs.SkillTreeDTO: returns {
+    style.stroke-dash: 3
+}
+ViewControllerContainer -> Controllers.AuthController: "* .. 1\nsends" {
+    style.stroke-dash: 3
+}
+Controllers.AuthController -> DTOs.LoginRequestDTO: receives {
+    style.stroke-dash: 3
+}
+Controllers.AuthController -> DTOs.UserDTO: returns {
+    style.stroke-dash: 3
+}
+ViewControllerContainer -> Controllers.ProgressController: "* .. 1\nsends" {
+    style.stroke-dash: 3
+}
+Controllers.CourseController -> DTOs.CourseDetailDTO: returns {
+    style.stroke-dash: 3
+}
+Controllers.ProgressController -> DTOs.ProgressDTO: returns {
+    style.stroke-dash: 3
+}
+Controllers.ProgressController -> DTOs.CourseProgressDTO: returns {
+    style.stroke-dash: 3
+}

@@ -1,0 +1,44 @@
+shape: sequence_diagram
+
+title: |md
+  # US5 Lv2 (Backend) : ดูภาพรวม progress ทั้งหมด
+| {near: top-center}
+
+Frontend: Frontend Container
+SpringSession: "<<filter>>\nSpring Session"
+Controller: "<<@RestController>>\nProgressController"
+Service: "<<@Service>>\nProgressService"
+Repository: "<<JpaRepository>>\nProgressRepository"
+Mapper: "<<@Component>>\nProgressMapper"
+MySQL: MySQL Container {
+    shape: cylinder
+}
+Redis: Redis Container {
+    shape: cylinder
+}
+
+ดูภาพรวม: {
+    Frontend -> SpringSession: "GET /progress/courses + Cookie"
+    SpringSession -> Redis: โหลด session ด้วย session id
+    Redis -> SpringSession: session (ถ้ามี)
+    SpringSession -> Controller: ส่งต่อ request + session
+
+    no_session: "[ไม่มี user id ใน session]" {
+        Controller -> SpringSession: 401 Unauthorized
+        SpringSession -> Frontend: 401 Unauthorized
+    }
+
+    has_session: "[มี user id]" {
+        Controller -> Service: ขอ progress รายวิชา (user id)
+        Service -> Repository: นับ topic ทั้งหมดและที่เรียนแล้วของทุกวิชา
+        Repository -> MySQL: "SQL query (courses left join relation_topic_course left join progress, group by course)"
+        MySQL -> Repository: ผลลัพธ์
+        Repository -> Service: List<CourseProgressCount>
+        Service -> Mapper: แปลงทีละวิชา + คำนวณเปอร์เซ็นต์
+        Mapper -> Service: List<CourseProgressDTO>
+        Service -> Controller: List<CourseProgressDTO>
+        Controller -> SpringSession: "200 OK (List<CourseProgressDTO>)"
+        SpringSession -> Redis: ต่ออายุ session (TTL 7 วัน)
+        SpringSession -> Frontend: "200 OK (List<CourseProgressDTO>)"
+    }
+}

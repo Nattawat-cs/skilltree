@@ -1,0 +1,174 @@
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Red+Hat+Display:ital,wght@0,300..900;1,300..900&display=swap');
+
+.cl-page {
+  --green: #0a973e;
+  --green-dark: #0f612d;
+  --ink: #fff;
+  --muted: #9097a1;
+  --bg: #1e293b;
+
+  min-height: 100vh;
+  background: var(--bg);
+  color: var(--ink);
+  font-family: 'Red Hat Display';
+  font-optical-sizing: auto;
+  font-style: normal;
+  box-sizing: border-box;
+
+  display: flex;
+  flex-direction: column;
+}
+.cl-page *, .cl-page *::before, .cl-page *::after { box-sizing: border-box; }
+
+/* header */
+.cl-header {
+  padding: 15vh 5vw 0;
+  text-align: center;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 18px;
+}
+.cl-logo {
+  margin: 0;
+  display: inline-flex;
+  align-items: center;
+  color: var(--green);
+  font-size: clamp(1.5rem, 3.5vw, 2.4rem);
+  font-weight: 800;
+  letter-spacing: -0.01em;
+  line-height: 1;
+  white-space: pre;
+}
+.cl-logo span:first-child { margin-right: 0.04em; }
+.cl-compass {
+  width: 1.1em;
+  height: 1.1em;
+  margin: 0 0.02em;
+  color: var(--green);
+  flex-shrink: 0;
+}
+.cl-header-rule {
+  width: min(420px, 100%);
+  height: 4px;
+  background: var(--green);
+  margin: 0;
+  opacity: 0.9;
+}
+
+/* card */
+.cl-main {
+  display: flex;
+  justify-content: center;
+  padding: 24px 1.25rem 4rem;
+}
+.cl-card {
+  width: 100%;
+  max-width: 360px;
+  background: #0d1018;
+  border-radius: 20px;
+  padding: 1.5rem 1.5rem 1.5rem;
+  box-shadow: 0 6px 14px rgba(30, 37, 54, 0.22);
+}
+.cl-title {
+  margin: 0;
+  font-size: 1.4rem;
+  font-weight: 700;
+  letter-spacing: -0.01em;
+}
+.cl-subtitle {
+  margin: 0.6rem 0 0;
+  font-size: 0.72rem;
+  font-weight: 500;
+}
+.cl-divider {
+  border: 0;
+  height: 2px;
+  background: var(--green);
+  margin: 1.2rem 0 1rem;
+}
+
+/* fields */
+.cl-label {
+  display: block;
+  font-size: 0.8rem;
+  font-weight: 600;
+}
+.cl-label-row {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  margin-top: 0.9rem;
+}
+.cl-forgot {
+  font-size: 0.72rem;
+  color: var(--muted);
+  text-decoration: none;
+}
+.cl-forgot:hover { color: var(--green); text-decoration: underline; }
+
+.cl-input {
+  display: block;
+  width: 100%;
+  height: 48px;
+  margin-top: 0.5rem;
+  padding: 0 0.8rem;
+  border: 2px solid var(--green);
+  border-radius: 18px;
+  background: #fff;
+  --ink:#1E293B;
+
+  color: var(--ink);
+  font: inherit;
+  font-size: 0.85rem;
+  outline: none;
+  transition: box-shadow 0.15s ease;
+}
+.cl-input::placeholder { color: var(--muted); opacity: 0.85; }
+.cl-input:focus { box-shadow: 0 0 0 4px rgba(47, 99, 57, 0.18); }
+
+/* error state ของช่อง Student ID */
+.cl-input--error {
+  border-color: #b3261e;
+}
+.cl-input--error:focus {
+  box-shadow: 0 0 0 4px rgba(179, 38, 30, 0.18);
+}
+
+.cl-field-error {
+  margin: 0.4rem 0 0;
+  font-size: 0.75rem;
+  color: #b3261e;
+}
+
+.cl-error {
+  margin: 1rem 0 0;
+  font-size: 0.75rem;
+  color: #b3261e;
+}
+
+/* button */
+.cl-button {
+  display: block;
+  width: 100%;
+  height: 48px;
+  margin-top: 1.2rem;
+  border: 0;
+  border-radius: 18px;
+  background: var(--green);
+  color: #fff;
+  font: inherit;
+  font-size: 0.9rem;
+  font-weight: 700;
+  cursor: pointer;
+  transition: background 0.15s ease;
+}
+.cl-button:hover:not(:disabled) { background: var(--green-dark); }
+.cl-button:focus-visible { outline: 3px solid rgba(47, 99, 57, 0.4); outline-offset: 3px; }
+.cl-button:disabled { opacity: 0.7; cursor: not-allowed; }
+
+@media (max-width: 520px) {
+  .cl-card { padding: 2rem 1.4rem 2rem; border-radius: 22px; }
+  .cl-input, .cl-button { height: 60px; font-size: 1.05rem; }
+}

@@ -1,0 +1,40 @@
+vars: { d2-config: { layout-engine: elk } }
+direction: right
+cstu_student: CSTU Students
+cstu_student.shape: person
+system3-1: 3.1 ค้นหารายละเอียดวิชา
+system3-1.shape: circle
+system3-2: 3.2 ตรวจสอบ session
+system3-2.shape: circle
+system3-3: 3.3 ค้นหาความคืบหน้า
+system3-3.shape: circle
+courses: D6 courses (MySQL)
+courses.shape: cylinder
+course_topics: D7 relation_topic_course (MySQL)
+course_topics.shape: cylinder
+topics: D4 topics (MySQL)
+topics.shape: cylinder
+course_cache: D8 course cache (Redis)
+course_cache.shape: cylinder
+sessions: D2 sessions (Redis)
+sessions.shape: cylinder
+progress: D5 progress (MySQL)
+progress.shape: cylinder
+cstu_student -> system3-1: course id
+system3-1 -> course_cache: ค้นหาด้วย course id / เก็บรายละเอียดวิชา (TTL 1 วัน)
+course_cache -> system3-1: รายละเอียดวิชา (ถ้ามี)
+system3-1 -> courses: ค้นหาด้วย course id (เมื่อ cache ไม่มี)
+courses -> system3-1: ข้อมูลวิชา
+system3-1 -> course_topics: ค้นหา topic ของวิชา (เมื่อ cache ไม่มี)
+course_topics -> system3-1: topic id + seq_no
+system3-1 -> topics: ค้นหาด้วย topic id (เมื่อ cache ไม่มี)
+topics -> system3-1: ข้อมูล topic
+system3-1 -> cstu_student: รายละเอียดวิชา + รายการ topic / แจ้งไม่พบรายวิชา
+cstu_student -> system3-2: cookie (session id)
+system3-2 -> sessions: session id
+sessions -> system3-2: user id (ถ้ามี)
+system3-2 -> cstu_student: แจ้งให้เข้าสู่ระบบ (ไม่มี session หรือหมดอายุ)
+system3-2 -> system3-3: user id
+system3-3 -> progress: ค้นหาด้วย user id
+progress -> system3-3: topic id ที่เรียนแล้ว + done_at
+system3-3 -> cstu_student: รายการ topic ที่เรียนแล้ว

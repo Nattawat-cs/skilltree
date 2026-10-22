@@ -1,0 +1,72 @@
+vars: {
+    d2-config: {
+        layout-engine: elk
+    }
+}
+
+title: |md
+  # Overview Lv2 : class ทั้งหมดของ US1–US5
+| {near: top-center}
+
+ViewContainer: @components/views/viewContainer.viewContainer
+ViewControllerContainer: @components/views/viewControllerContainer.viewControllerContainer
+
+Controllers: Controllers {
+    AuthController: "<<@RestController>>\nAuthController"
+    CourseController: "<<@RestController>>\nCourseController"
+    ProgressController: "<<@RestController>>\nProgressController"
+}
+
+Services: Services {
+    AuthService: "<<@Service>>\nAuthService"
+    UserService: "<<@Service>>\nUserService"
+    CourseService: "<<@Service>>\nCourseService"
+    ProgressService: "<<@Service>>\nProgressService"
+}
+
+Clients: Clients {
+    TuApiClient: "<<@Component>>\nTuApiClient"
+}
+
+Mappers: Mappers {
+    UserMapper: "<<@Component>>\nUserMapper"
+    CourseMapper: "<<@Component>>\nCourseMapper"
+    ProgressMapper: "<<@Component>>\nProgressMapper"
+}
+
+Repositories: Repositories {
+    UserRepository: "<<JpaRepository>>\nUserRepository"
+    CourseRepository: "<<JpaRepository>>\nCourseRepository"
+    CourseTopicRepository: "<<JpaRepository>>\nCourseTopicRepository"
+    PrerequisiteRepository: "<<JpaRepository>>\nPrerequisiteRepository"
+    TopicRepository: "<<JpaRepository>>\nTopicRepository"
+    ProgressRepository: "<<JpaRepository>>\nProgressRepository"
+}
+
+Entities: Entities {
+    User: "<<@Entity>>\nUser"
+    Role: "<<enumeration>>\nRole"
+    Course: "<<@Entity>>\nCourse"
+    CourseTopic: "<<@Entity>>\nCourseTopic"
+    Topic: "<<@Entity>>\nTopic"
+    Prerequisite: "<<@Entity>>\nPrerequisite"
+    Progress: "<<@Entity>>\nProgress"
+    ProgressId: "<<@Embeddable>>\nProgressId"
+}
+
+DTOs: DTOs {
+    LoginRequestDTO: "<<record>>\nLoginRequestDTO"
+    TuVerifyRequestDTO: "<<record>>\nTuVerifyRequestDTO"
+    TuVerifyResponseDTO: "<<record>>\nTuVerifyResponseDTO"
+    UserDTO: "<<record>>\nUserDTO"
+    SkillTreeDTO: "<<record>>\nSkillTreeDTO"
+    CourseItemDTO: "<<record>>\nCourseItemDTO"
+    PrerequisiteDTO: "<<record>>\nPrerequisiteDTO"
+    CourseDetailDTO: "<<record>>\nCourseDetailDTO"
+    TopicItemDTO: "<<record>>\nTopicItemDTO"
+    ProgressDTO: "<<record>>\nProgressDTO"
+    CourseProgressCount: "<<record>>\nCourseProgressCount"
+    CourseProgressDTO: "<<record>>\nCourseProgressDTO"
+}
+
+...@components/relations/overviewRelations

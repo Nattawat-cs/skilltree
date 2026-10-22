@@ -1,0 +1,33 @@
+shape: sequence_diagram
+
+title: |md
+  # US5 Lv3 (Backend methods) : ดูภาพรวม progress ทั้งหมด
+| {near: top-center}
+
+Frontend: Frontend Container
+Controller: ":ProgressController"
+Session: ":HttpSession"
+Service: ":ProgressService"
+Repository: ":ProgressRepository"
+Mapper: ":ProgressMapper"
+
+ดูภาพรวม: {
+    Frontend -> Controller: "GET /progress/courses"
+    Controller -> Session: "getAttribute(\"userId\")"
+    Session -> Controller: UUID หรือ null
+
+    no_session: "[userId == null]" {
+        Controller -> Frontend: "ResponseEntity.status(401).build()"
+    }
+
+    has_session: "[userId != null]" {
+        Controller -> Service: "getCourseProgress(userId)"
+        Service -> Repository: "@Query findCourseProgressCounts(userId)"
+        Repository -> Service: List<CourseProgressCount>
+        Service -> Mapper: "toCourseProgressDTO(count) ทีละวิชา"
+        Mapper -> Mapper: "percent = totalTopics == 0 ? 0 : doneTopics * 100 / totalTopics"
+        Mapper -> Service: CourseProgressDTO
+        Service -> Controller: List<CourseProgressDTO>
+        Controller -> Frontend: "ResponseEntity.ok(courseProgressDTOs)"
+    }
+}

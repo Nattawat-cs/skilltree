@@ -1,0 +1,90 @@
+shape: sequence_diagram
+
+title: |md
+  # US3 Lv2 (Backend) : เลือกรายวิชา
+| {near: top-center}
+
+Frontend: Frontend Container
+SpringSession: "<<filter>>\nSpring Session"
+CourseCtrl: "<<@RestController>>\nCourseController"
+CourseSvc: "<<@Service>>\nCourseService"
+CourseRepo: "<<JpaRepository>>\nCourseRepository"
+CourseTopicRepo: "<<JpaRepository>>\nCourseTopicRepository"
+CourseMapper: "<<@Component>>\nCourseMapper"
+ProgressCtrl: "<<@RestController>>\nProgressController"
+ProgressSvc: "<<@Service>>\nProgressService"
+ProgressRepo: "<<JpaRepository>>\nProgressRepository"
+ProgressMapper: "<<@Component>>\nProgressMapper"
+MySQL: MySQL Container {
+    shape: cylinder
+}
+Redis: Redis Container {
+    shape: cylinder
+}
+
+ดูรายละเอียดวิชา: {
+    Frontend -> SpringSession: "GET /courses/{courseId}"
+    SpringSession -> CourseCtrl: ส่งต่อ request
+    CourseCtrl -> CourseSvc: ขอรายละเอียดวิชา (course id)
+    CourseSvc -> Redis: หา CourseDetailDTO ใน cache ด้วย course id
+
+    cache_hit: "[cache hit]" {
+        Redis -> CourseSvc: CourseDetailDTO
+    }
+
+    cache_miss: "[cache miss]" {
+        Redis -> CourseSvc: ไม่มี
+        CourseSvc -> CourseRepo: หาวิชาด้วย course id
+        CourseRepo -> MySQL: SQL query
+        MySQL -> CourseRepo: ผลลัพธ์
+        CourseRepo -> CourseSvc: Course (ถ้ามี)
+
+        not_found: "[ไม่มีวิชา]" {
+            CourseSvc -> CourseCtrl: ไม่พบรายวิชา
+            CourseCtrl -> SpringSession: 404 Not Found
+            SpringSession -> Frontend: 404 Not Found
+        }
+
+        found: "[มีวิชา]" {
+            CourseSvc -> CourseTopicRepo: หา topic ของวิชาเรียงตาม seq_no
+            CourseTopicRepo -> MySQL: "SQL query (join topics)"
+            MySQL -> CourseTopicRepo: ผลลัพธ์
+            CourseTopicRepo -> CourseSvc: List<CourseTopic>
+            CourseSvc -> CourseMapper: แปลง Course + List<CourseTopic>
+            CourseMapper -> CourseSvc: CourseDetailDTO
+            CourseSvc -> Redis: "เก็บ CourseDetailDTO ลง cache (key = course id, TTL 1 วัน)"
+        }
+    }
+
+    ok: "[มีวิชา]" {
+        CourseSvc -> CourseCtrl: CourseDetailDTO
+        CourseCtrl -> SpringSession: "200 OK (CourseDetailDTO)"
+        SpringSession -> Frontend: "200 OK (CourseDetailDTO)"
+    }
+}
+
+ดูสถานะเรียนแล้ว: {
+    Frontend -> SpringSession: "GET /progress + Cookie"
+    SpringSession -> Redis: โหลด session ด้วย session id
+    Redis -> SpringSession: session (ถ้ามี)
+    SpringSession -> ProgressCtrl: ส่งต่อ request + session
+
+    no_session: "[ไม่มี user id ใน session]" {
+        ProgressCtrl -> SpringSession: 401 Unauthorized
+        SpringSession -> Frontend: 401 Unauthorized
+    }
+
+    has_session: "[มี user id]" {
+        ProgressCtrl -> ProgressSvc: ขอ progress ของ user (user id)
+        ProgressSvc -> ProgressRepo: หา progress ด้วย user id
+        ProgressRepo -> MySQL: SQL query
+        MySQL -> ProgressRepo: ผลลัพธ์
+        ProgressRepo -> ProgressSvc: List<Progress>
+        ProgressSvc -> ProgressMapper: แปลง Progress ทีละตัว
+        ProgressMapper -> ProgressSvc: List<ProgressDTO>
+        ProgressSvc -> ProgressCtrl: List<ProgressDTO>
+        ProgressCtrl -> SpringSession: "200 OK (List<ProgressDTO>)"
+        SpringSession -> Redis: ต่ออายุ session (TTL 7 วัน)
+        SpringSession -> Frontend: "200 OK (List<ProgressDTO>)"
+    }
+}

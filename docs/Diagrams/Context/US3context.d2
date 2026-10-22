@@ -1,0 +1,16 @@
+vars: {
+    d2-config: {
+        layout-engine: elk
+    }
+}
+
+direction: right
+
+cstu_student: CSTU Students
+cstu_student.shape: person
+
+system: 3. ระบบเลือกรายวิชา
+system.shape: circle
+
+cstu_student -> system: course id ที่เลือก + session
+system -> cstu_student: รายละเอียดวิชา + รายการ topic + สถานะเรียนแล้ว

@@ -1,0 +1,78 @@
+vars {
+    d2-config: {
+        layout-engine: elk
+    }
+}
+
+direction: right
+
+CstuStudent: CSTU Student {
+    shape: person
+    width: 50
+}
+
+FrontendContainer: Frontend Container {
+    Views: Views {
+        shape: rectangle
+    }
+}
+
+ViewsNote: {
+    shape: page
+    label: หน้าทุกหน้าของหน้าบ้านจะอยู่ใน container อันนี้
+}
+
+BackendContainer: Backend Container (Spring Boot) {
+    Controllers: "<<@RestController>>\nControllers"
+    Services: "<<@Service>>\nServices"
+    Mappers: "<<@Component>>\nMappers"
+    Repositories: "<<JpaRepository>>\nRepositories"
+    Clients: "<<@Component>>\nClients"
+    DTOs: "<<record>>\nDTOs"
+    Entities: "<<@Entity>>\nEntities"
+}
+
+RedisContainer: Redis Container {
+    Redis: Redis {
+        shape: cylinder
+        width: 80
+    }
+}
+
+DBContainer: Relational DB Container {
+    MySQL: MySQL {
+        shape: cylinder
+        width: 80
+    }
+}
+
+TUAPI: "<<external>>\nTU API" {
+    style.stroke-dash: 3
+    shape: person
+    width: 50
+}
+
+##
+CstuStudent -> FrontendContainer.Views: use
+ViewsNote -> FrontendContainer.Views: {
+    style.stroke-dash: 3
+    target-arrowhead.shape: none
+}
+
+FrontendContainer.Views -> BackendContainer.Controllers: "HTTP / JSON (DTO)"
+
+BackendContainer.Controllers -> BackendContainer.Services: calls
+BackendContainer.Controllers -> BackendContainer.DTOs: returns
+BackendContainer.Services -> BackendContainer.Repositories: calls
+BackendContainer.Services -> BackendContainer.Mappers: uses
+BackendContainer.Mappers -> BackendContainer.Entities: reads
+BackendContainer.Mappers -> BackendContainer.DTOs: creates
+BackendContainer.Repositories -> BackendContainer.Entities: returns
+
+BackendContainer.Services -> RedisContainer.Redis: "@Cacheable (Spring Cache)" {
+    style.stroke-dash: 3
+}
+BackendContainer -> RedisContainer.Redis: "sessions (Spring Session)"
+BackendContainer.Repositories -> DBContainer.MySQL: "JPA / Hibernate"
+BackendContainer.Services -> BackendContainer.Clients: calls
+BackendContainer.Clients -> TUAPI: "HTTPS (verify TU account)"

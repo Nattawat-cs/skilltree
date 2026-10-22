@@ -1,0 +1,22 @@
+shape: sequence_diagram
+
+title: |md
+  # US5 Lv0 : ดูภาพรวม progress ทั้งหมด
+| {near: top-center}
+
+CstuStudent: CSTU Student {
+    shape: person
+}
+System: CSTU Compass
+
+ดูภาพรวม: {
+    CstuStudent -> System: เปิดหน้าภาพรวม progress
+
+    no_session: "[ยังไม่ได้เข้าสู่ระบบ]" {
+        System -> CstuStudent: ให้เข้าสู่ระบบก่อน
+    }
+
+    has_session: "[เข้าสู่ระบบแล้ว]" {
+        System -> CstuStudent: แถบ progress ของทุกวิชา (เปอร์เซ็นต์ topic ที่เรียนแล้ว)
+    }
+}

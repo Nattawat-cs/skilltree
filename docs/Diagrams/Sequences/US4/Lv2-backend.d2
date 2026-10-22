@@ -1,0 +1,86 @@
+shape: sequence_diagram
+
+title: |md
+  # US4 Lv2 (Backend) : Checkbox บันทึกว่าเรียน topic แล้ว
+| {near: top-center}
+
+Frontend: Frontend Container
+SpringSession: "<<filter>>\nSpring Session"
+Controller: "<<@RestController>>\nProgressController"
+Service: "<<@Service>>\nProgressService"
+TopicRepo: "<<JpaRepository>>\nTopicRepository"
+ProgressRepo: "<<JpaRepository>>\nProgressRepository"
+Mapper: "<<@Component>>\nProgressMapper"
+MySQL: MySQL Container {
+    shape: cylinder
+}
+Redis: Redis Container {
+    shape: cylinder
+}
+
+ติ๊ก: {
+    Frontend -> SpringSession: "PUT /progress/topics/{topicId} + Cookie"
+    SpringSession -> Redis: โหลด session ด้วย session id
+    Redis -> SpringSession: session (ถ้ามี)
+    SpringSession -> Controller: ส่งต่อ request + session
+
+    no_session: "[ไม่มี user id ใน session]" {
+        Controller -> SpringSession: 401 Unauthorized
+        SpringSession -> Frontend: 401 Unauthorized
+    }
+
+    has_session: "[มี user id]" {
+        Controller -> Service: บันทึกว่าเรียนแล้ว (user id + topic id)
+        Service -> TopicRepo: ตรวจว่ามี topic
+        TopicRepo -> MySQL: SQL query
+        MySQL -> TopicRepo: ผลลัพธ์
+        TopicRepo -> Service: มี / ไม่มี
+
+        not_found: "[ไม่มี topic]" {
+            Service -> Controller: ไม่พบ topic
+            Controller -> SpringSession: 404 Not Found
+            SpringSession -> Frontend: 404 Not Found
+        }
+
+        found: "[มี topic]" {
+            Service -> ProgressRepo: หา progress ด้วย (user id, topic id)
+            ProgressRepo -> MySQL: SQL query
+            MySQL -> ProgressRepo: ผลลัพธ์
+            ProgressRepo -> Service: Progress (ถ้ามี)
+
+            new_progress: "[ยังไม่มี progress]" {
+                Service -> ProgressRepo: "บันทึก Progress ใหม่ (done_at = ตอนนี้)"
+                ProgressRepo -> MySQL: SQL insert
+            }
+
+            Service -> Mapper: แปลง Progress
+            Mapper -> Service: ProgressDTO
+            Service -> Controller: ProgressDTO
+            Controller -> SpringSession: "200 OK (ProgressDTO)"
+            SpringSession -> Redis: ต่ออายุ session (TTL 7 วัน)
+            SpringSession -> Frontend: "200 OK (ProgressDTO)"
+        }
+    }
+}
+
+เอาติ๊กออก: {
+    Frontend -> SpringSession: "DELETE /progress/topics/{topicId} + Cookie"
+    SpringSession -> Redis: โหลด session ด้วย session id
+    Redis -> SpringSession: session (ถ้ามี)
+    SpringSession -> Controller: ส่งต่อ request + session
+
+    no_session: "[ไม่มี user id ใน session]" {
+        Controller -> SpringSession: 401 Unauthorized
+        SpringSession -> Frontend: 401 Unauthorized
+    }
+
+    has_session: "[มี user id]" {
+        Controller -> Service: ยกเลิกว่าเรียนแล้ว (user id + topic id)
+        Service -> ProgressRepo: ลบ progress ด้วย (user id, topic id)
+        ProgressRepo -> MySQL: SQL delete
+        Service -> Controller: เสร็จ
+        Controller -> SpringSession: 204 No Content
+        SpringSession -> Redis: ต่ออายุ session (TTL 7 วัน)
+        SpringSession -> Frontend: 204 No Content
+    }
+}

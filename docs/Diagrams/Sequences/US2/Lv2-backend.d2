@@ -1,0 +1,80 @@
+shape: sequence_diagram
+
+title: |md
+  # US2 Lv2 (Backend) : เข้าสู่ระบบด้วยบัญชี TU
+| {near: top-center}
+
+Frontend: Frontend Container
+SpringSession: "<<filter>>\nSpring Session"
+Controller: "<<@RestController>>\nAuthController"
+Service: "<<@Service>>\nAuthService"
+UserSvc: "<<@Service>>\nUserService"
+Client: "<<@Component>>\nTuApiClient"
+TUAPI: "<<external>>\nTU API" {
+    shape: person
+}
+Mapper: "<<@Component>>\nUserMapper"
+Repository: "<<JpaRepository>>\nUserRepository"
+MySQL: MySQL Container {
+    shape: cylinder
+}
+Redis: Redis Container {
+    shape: cylinder
+}
+
+เข้าสู่ระบบ: {
+    Frontend -> SpringSession: "POST /auth/login (LoginRequestDTO)"
+    SpringSession -> Controller: ส่งต่อ request
+    Controller -> Service: ขอเข้าสู่ระบบ (username + password)
+    Service -> Client: ยืนยันตัวตน (username + password)
+    Client -> TUAPI: "HTTPS (TuVerifyRequestDTO)"
+    TUAPI -> Client: JSON
+    Client -> Service: TuVerifyResponseDTO
+
+    fail: "[status = false]" {
+        Service -> Controller: ยืนยันไม่ผ่าน
+        Controller -> SpringSession: 401 Unauthorized
+        SpringSession -> Frontend: 401 Unauthorized
+    }
+
+    not_student: "[type ไม่ใช่ student]" {
+        Service -> Controller: ไม่ใช่นักศึกษา
+        Controller -> SpringSession: 403 Forbidden
+        SpringSession -> Frontend: 403 Forbidden
+    }
+
+    success: "[status = true และเป็น student]" {
+        Service -> UserSvc: ขอ UserDTO (TuVerifyResponseDTO)
+        UserSvc -> Redis: หา UserDTO ใน cache ด้วย std_id
+
+        cache_hit: "[cache hit]" {
+            Redis -> UserSvc: UserDTO
+        }
+
+        cache_miss: "[cache miss]" {
+            Redis -> UserSvc: ไม่มี
+            UserSvc -> Repository: หา user ด้วย std_id
+            Repository -> MySQL: SQL query
+            MySQL -> Repository: ผลลัพธ์
+            Repository -> UserSvc: User (ถ้ามี)
+
+            new_user: "[ยังไม่มี user]" {
+                UserSvc -> Mapper: แปลง TuVerifyResponseDTO
+                Mapper -> UserSvc: User ใหม่
+                UserSvc -> Repository: บันทึก User
+                Repository -> MySQL: SQL insert
+            }
+
+            UserSvc -> Mapper: แปลง User
+            Mapper -> UserSvc: UserDTO
+            UserSvc -> Redis: "เก็บ UserDTO ลง cache (key = std_id, TTL 1 วัน)"
+        }
+
+        UserSvc -> Service: UserDTO
+        Service -> Controller: UserDTO
+        Controller -> Controller: ใส่ user id ลง session
+        Controller -> SpringSession: "200 OK (UserDTO)"
+        SpringSession -> Redis: เก็บ session (TTL 7 วัน)
+        SpringSession -> Frontend: "200 OK (UserDTO) + Set-Cookie: SESSION=<id>"
+    }
+}

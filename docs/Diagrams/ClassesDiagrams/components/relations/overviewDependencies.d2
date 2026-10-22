@@ -1,0 +1,72 @@
+Mappers.CourseMapper -> Entities.Course: reads {
+    style.stroke-dash: 3
+}
+Mappers.CourseMapper -> Entities.Prerequisite: reads {
+    style.stroke-dash: 3
+}
+Mappers.CourseMapper -> DTOs.SkillTreeDTO: creates {
+    style.stroke-dash: 3
+}
+Mappers.CourseMapper -> DTOs.CourseItemDTO: creates {
+    style.stroke-dash: 3
+}
+Mappers.CourseMapper -> DTOs.PrerequisiteDTO: creates {
+    style.stroke-dash: 3
+}
+ViewControllerContainer -> DTOs.LoginRequestDTO: creates {
+    style.stroke-dash: 3
+}
+Clients.TuApiClient -> DTOs.TuVerifyRequestDTO: creates {
+    style.stroke-dash: 3
+}
+Clients.TuApiClient -> DTOs.TuVerifyResponseDTO: creates {
+    style.stroke-dash: 3
+}
+Services.AuthService -> DTOs.TuVerifyResponseDTO: reads {
+    style.stroke-dash: 3
+}
+Services.UserService -> Entities.User: "finds / saves" {
+    style.stroke-dash: 3
+}
+Mappers.UserMapper -> DTOs.TuVerifyResponseDTO: reads {
+    style.stroke-dash: 3
+}
+Mappers.UserMapper -> Entities.User: "creates / reads" {
+    style.stroke-dash: 3
+}
+Mappers.UserMapper -> DTOs.UserDTO: creates {
+    style.stroke-dash: 3
+}
+Mappers.CourseMapper -> Entities.CourseTopic: reads {
+    style.stroke-dash: 3
+}
+Mappers.CourseMapper -> DTOs.CourseDetailDTO: creates {
+    style.stroke-dash: 3
+}
+Mappers.CourseMapper -> DTOs.TopicItemDTO: creates {
+    style.stroke-dash: 3
+}
+Mappers.ProgressMapper -> Entities.Progress: reads {
+    style.stroke-dash: 3
+}
+Mappers.ProgressMapper -> DTOs.ProgressDTO: creates {
+    style.stroke-dash: 3
+}
+Services.ProgressService -> Entities.Progress: "creates / finds / deletes" {
+    style.stroke-dash: 3
+}
+Repositories.ProgressRepository -> Entities.Course: "joins (@Query)" {
+    style.stroke-dash: 3
+}
+Repositories.ProgressRepository -> Entities.CourseTopic: "joins (@Query)" {
+    style.stroke-dash: 3
+}
+Repositories.ProgressRepository -> DTOs.CourseProgressCount: creates {
+    style.stroke-dash: 3
+}
+Mappers.ProgressMapper -> DTOs.CourseProgressCount: reads {
+    style.stroke-dash: 3
+}
+Mappers.ProgressMapper -> DTOs.CourseProgressDTO: creates {
+    style.stroke-dash: 3
+}

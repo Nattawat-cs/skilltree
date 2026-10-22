@@ -1,0 +1,63 @@
+shape: sequence_diagram
+
+title: |md
+  # US3 Lv1 : เลือกรายวิชา
+| {near: top-center}
+
+CstuStudent: CSTU Student {
+    shape: person
+}
+Frontend: Frontend Container (Views)
+Backend: Backend Container (Spring Boot)
+MySQL: MySQL Container {
+    shape: cylinder
+}
+Redis: Redis Container {
+    shape: cylinder
+}
+
+เลือกรายวิชา: {
+    CstuStudent -> Frontend: เลือกรายวิชาที่สนใจ
+    Frontend -> Backend: "GET /courses/{courseId}"
+    Backend -> Redis: หารายละเอียดวิชาใน cache ด้วย course id
+
+    cache_hit: "[cache hit]" {
+        Redis -> Backend: รายละเอียดวิชา + topic
+    }
+
+    cache_miss: "[cache miss]" {
+        Redis -> Backend: ไม่มี
+        Backend -> MySQL: หาวิชา + topic เรียงตาม seq_no
+
+        not_found: "[ไม่มีวิชา]" {
+            MySQL -> Backend: ไม่มี
+            Backend -> Frontend: "404 Not Found"
+            Frontend -> CstuStudent: แจ้งไม่พบรายวิชา
+        }
+
+        found: "[มีวิชา]" {
+            MySQL -> Backend: วิชา + topic
+            Backend -> Redis: "เก็บรายละเอียดวิชาลง cache (TTL 1 วัน)"
+        }
+    }
+
+    ok: "[มีวิชา]" {
+        Backend -> Frontend: "200 OK (CourseDetailDTO)"
+        Frontend -> Backend: "GET /progress + Cookie: SESSION=<id>"
+        Backend -> Redis: โหลด session ด้วย session id
+
+        no_session: "[ไม่มี session หรือหมดอายุ]" {
+            Redis -> Backend: ไม่มี
+            Backend -> Frontend: "401 Unauthorized"
+            Frontend -> CstuStudent: ไปหน้าเข้าสู่ระบบ
+        }
+
+        has_session: "[มี session]" {
+            Redis -> Backend: user id
+            Backend -> MySQL: หา progress ด้วย user id
+            MySQL -> Backend: progress
+            Backend -> Frontend: "200 OK (List<ProgressDTO>)"
+            Frontend -> CstuStudent: รายการ topic + checkbox ตามสถานะ
+        }
+    }
+}

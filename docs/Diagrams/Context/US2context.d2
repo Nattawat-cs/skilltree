@@ -1,0 +1,22 @@
+vars: {
+    d2-config: {
+        layout-engine: elk
+    }
+}
+
+direction: right
+
+cstu_student: CSTU Students
+cstu_student.shape: person
+
+system: 2. ระบบเข้าสู่ระบบ
+system.shape: circle
+
+tu_api: TU API
+tu_api.shape: person
+
+cstu_student -> system: username + password (บัญชี TU)
+system -> cstu_student: ผลการเข้าสู่ระบบ + session
+
+system -> tu_api: username + password
+tu_api -> system: ผลยืนยันตัวตน + ข้อมูลนักศึกษา

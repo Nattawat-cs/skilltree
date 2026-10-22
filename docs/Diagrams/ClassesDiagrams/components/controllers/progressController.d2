@@ -1,0 +1,9 @@
+progressController: {
+  shape: class
+  label: "<<@RestController>>\nProgressController"
+  -progressService: ProgressService
+  "+getProgress(session: HttpSession)": ResponseEntity<List<ProgressDTO>>
+  "+getCourseProgress(session: HttpSession)": ResponseEntity<List<CourseProgressDTO>>
+  "+markDone(topicId: UUID, session: HttpSession)": ResponseEntity<ProgressDTO>
+  "+unmarkDone(topicId: UUID, session: HttpSession)": ResponseEntity<Void>
+}

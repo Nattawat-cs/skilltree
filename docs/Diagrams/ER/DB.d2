@@ -1,0 +1,135 @@
+vars: {
+    d2-config: {
+        layout-engine: elk
+    }
+}
+
+# ER diagram — transcribed from the paper card
+# type ที่ลงท้ายด้วย "| None" = nullable, ที่เหลือ = NOT NULL
+# แถว UNIQUE(...) / CHECK(...) = constraint ระดับตาราง
+
+# ===== Core entities =====
+users: {
+    shape: sql_table
+    id: uuid {constraint: primary_key}
+    std_id: "str (e.g. 6709681xxx)" {constraint: unique}
+    display_name_th: str | None
+    display_name_en: str | None
+    email: str | None
+    tu_status: str | None
+    faculty: str
+    department: str
+    role: "enum(STUDENT, ADMIN) default STUDENT"
+}
+
+courses: {
+    shape: sql_table
+    id: uuid {constraint: primary_key}
+    code: "str (e.g. CS100)" {constraint: unique}
+    name: str
+    desc: str | None
+}
+
+topics: {
+    shape: sql_table
+    id: uuid {constraint: primary_key}
+    name: str
+    desc: str | None
+}
+
+resources: {
+    shape: sql_table
+    id: uuid {constraint: primary_key}
+    kind: "enum(file, url)"
+    file_path: str | None
+    url: str | None
+    name: str
+    desc: str | None
+    timestamp: datetime
+}
+
+# logs is standalone (no FK)
+logs: {
+    shape: sql_table
+    id: uuid {constraint: primary_key}
+    type: "enum(info, warn, error, critical)"
+    content: str
+    timestamp: datetime
+}
+
+# ===== Join / relation tables =====
+relation_topic_course: {
+    shape: sql_table
+    id: uuid {constraint: primary_key}
+    topic_id: uuid {constraint: foreign_key}
+    course_id: uuid {constraint: foreign_key}
+    seq_no: int
+    "UNIQUE(course_id, topic_id)": constraint
+    "UNIQUE(course_id, seq_no)": constraint
+}
+
+relation_res_topics: {
+    shape: sql_table
+    id: uuid {constraint: primary_key}
+    res_id: uuid {constraint: foreign_key}
+    topic_id: uuid {constraint: foreign_key}
+    desc: str | None
+    timestamp: datetime | None
+    "UNIQUE(res_id, topic_id)": constraint
+}
+
+prerequisites: {
+    shape: sql_table
+    id: uuid {constraint: primary_key}
+    course_id: uuid {constraint: foreign_key}
+    prerequisite_id: uuid {constraint: foreign_key}
+    timestamp: datetime
+    "UNIQUE(course_id, prerequisite_id)": constraint
+    "CHECK(course_id <> prerequisite_id)": constraint
+}
+
+topic_relations: {
+    shape: sql_table
+    id: uuid {constraint: primary_key}
+    topic_id: uuid {constraint: foreign_key}
+    req_topic_id: uuid {constraint: foreign_key}
+    timestamp: datetime
+    "UNIQUE(topic_id, req_topic_id)": constraint
+    "CHECK(topic_id <> req_topic_id)": constraint
+}
+
+# sparse: row exists only when the user marked the topic done
+progress: {
+    shape: sql_table
+    user_id: uuid {constraint: [primary_key; foreign_key]}
+    topic_id: uuid {constraint: [primary_key; foreign_key]}
+    done_at: datetime
+}
+
+# ===== Relationships (one -> zero or many) =====
+classes: {
+    one-to-many: {
+        source-arrowhead.shape: cf-one-required
+        target-arrowhead.shape: cf-many
+    }
+}
+
+# course <-> topic (M:N, ordered by seq_no)
+courses.id -> relation_topic_course.course_id: contains {class: one-to-many}
+topics.id -> relation_topic_course.topic_id: appears in {class: one-to-many}
+
+# resource <-> topic (M:N)
+resources.id -> relation_res_topics.res_id: attached to {class: one-to-many}
+topics.id -> relation_res_topics.topic_id: has {class: one-to-many}
+
+# course -> course (prerequisite, self M:N)
+courses.id -> prerequisites.course_id: course_id {class: one-to-many}
+courses.id -> prerequisites.prerequisite_id: prerequisite_id {class: one-to-many}
+
+# topic -> topic (required topic, self M:N)
+topics.id -> topic_relations.topic_id: topic_id {class: one-to-many}
+topics.id -> topic_relations.req_topic_id: req_topic_id {class: one-to-many}
+
+# user <-> topic (learning progress)
+users.id -> progress.user_id: tracks {class: one-to-many}
+topics.id -> progress.topic_id: tracked by {class: one-to-many}

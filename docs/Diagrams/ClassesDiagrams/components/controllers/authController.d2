@@ -1,0 +1,6 @@
+authController: {
+  shape: class
+  label: "<<@RestController>>\nAuthController"
+  -authService: AuthService
+  "+login(request: LoginRequestDTO, session: HttpSession)": ResponseEntity<UserDTO>
+}

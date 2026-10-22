@@ -1,0 +1,33 @@
+shape: sequence_diagram
+
+title: |md
+  # US2 Lv0 : เข้าสู่ระบบด้วยบัญชี TU
+| {near: top-center}
+
+CstuStudent: CSTU Student {
+    shape: person
+}
+System: CSTU Compass
+TUAPI: "<<external>>\nTU API" {
+    shape: person
+}
+
+เข้าสู่ระบบ: {
+    CstuStudent -> System: กรอก username + password (บัญชี TU)
+    System -> TUAPI: ยืนยันตัวตน
+
+    success: "[ยืนยันผ่าน และเป็นนักศึกษา]" {
+        TUAPI -> System: ผ่าน + ข้อมูลนักศึกษา
+        System -> CstuStudent: เข้าสู่ระบบสำเร็จ
+    }
+
+    fail: "[ยืนยันไม่ผ่าน]" {
+        TUAPI -> System: ไม่ผ่าน
+        System -> CstuStudent: username หรือ password ไม่ถูกต้อง
+    }
+
+    not_student: "[ไม่ใช่นักศึกษา]" {
+        TUAPI -> System: ผ่าน แต่ไม่ใช่นักศึกษา
+        System -> CstuStudent: ระบบนี้สำหรับนักศึกษาเท่านั้น
+    }
+}

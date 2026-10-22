@@ -1,0 +1,25 @@
+vars: { d2-config: { layout-engine: elk } }
+direction: right
+cstu_student: CSTU Students
+cstu_student.shape: person
+system1-1: 1.1 ค้นหา skill tree
+system1-1.shape: circle
+system1-2: 1.2 สร้าง skill tree
+system1-2.shape: circle
+skill_tree_cache: D10 skill tree cache (Redis)
+skill_tree_cache.shape: cylinder
+courses: D6 courses (MySQL)
+courses.shape: cylinder
+prerequisites: D9 prerequisites (MySQL)
+prerequisites.shape: cylinder
+cstu_student -> system1-1: ขอดู skill tree
+system1-1 -> skill_tree_cache: ค้นหา skill tree
+skill_tree_cache -> system1-1: skill tree (ถ้ามี)
+system1-1 -> system1-2: ขอสร้าง skill tree (เมื่อ cache ไม่มี)
+system1-2 -> courses: ค้นหาทุกวิชา
+courses -> system1-2: ข้อมูลวิชาทุกวิชา
+system1-2 -> prerequisites: ค้นหาวิชาบังคับก่อนทั้งหมด
+prerequisites -> system1-2: คู่ course id + prerequisite id
+system1-2 -> skill_tree_cache: เก็บ skill tree (TTL 1 วัน)
+system1-2 -> system1-1: skill tree
+system1-1 -> cstu_student: รายวิชาทั้งหมด + เส้นวิชาบังคับก่อน

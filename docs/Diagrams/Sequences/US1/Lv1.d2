@@ -1,0 +1,39 @@
+shape: sequence_diagram
+
+title: |md
+  # US1 Lv1 : ดูภาพรวมเพื่อหารายวิชา (skill tree)
+| {near: top-center}
+
+CstuStudent: CSTU Student {
+    shape: person
+}
+Frontend: Frontend Container (Views)
+Backend: Backend Container (Spring Boot)
+MySQL: MySQL Container {
+    shape: cylinder
+}
+Redis: Redis Container {
+    shape: cylinder
+}
+
+ดู skill tree: {
+    CstuStudent -> Frontend: เปิดหน้า skill tree
+    Frontend -> Backend: "GET /skill-tree"
+    Backend -> Redis: หา skill tree ใน cache
+
+    cache_hit: "[cache hit]" {
+        Redis -> Backend: skill tree
+    }
+
+    cache_miss: "[cache miss]" {
+        Redis -> Backend: ไม่มี
+        Backend -> MySQL: ขอรายวิชาทั้งหมด
+        MySQL -> Backend: รายวิชา
+        Backend -> MySQL: ขอวิชาบังคับก่อนทั้งหมด
+        MySQL -> Backend: คู่วิชาบังคับก่อน
+        Backend -> Redis: "เก็บ skill tree ลง cache (TTL 1 วัน)"
+    }
+
+    Backend -> Frontend: "200 OK (SkillTreeDTO)"
+    Frontend -> CstuStudent: วาดแผนผังวิชา + เส้นวิชาบังคับก่อน
+}

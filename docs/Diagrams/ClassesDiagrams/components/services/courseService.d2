@@ -1,0 +1,10 @@
+courseService: {
+  shape: class
+  label: "<<@Service>>\nCourseService"
+  -courseRepository: CourseRepository
+  -courseTopicRepository: CourseTopicRepository
+  -prerequisiteRepository: PrerequisiteRepository
+  -courseMapper: CourseMapper
+  +getSkillTree(): SkillTreeDTO
+  "+getCourseDetail(courseId: UUID)": CourseDetailDTO
+}

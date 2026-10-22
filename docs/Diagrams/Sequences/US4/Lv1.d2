@@ -1,0 +1,67 @@
+shape: sequence_diagram
+
+title: |md
+  # US4 Lv1 : Checkbox บันทึกว่าเรียน topic แล้ว
+| {near: top-center}
+
+CstuStudent: CSTU Student {
+    shape: person
+}
+Frontend: Frontend Container (Views)
+Backend: Backend Container (Spring Boot)
+MySQL: MySQL Container {
+    shape: cylinder
+}
+Redis: Redis Container {
+    shape: cylinder
+}
+
+ติ๊ก: {
+    CstuStudent -> Frontend: ติ๊ก checkbox ของ topic
+    Frontend -> Backend: "PUT /progress/topics/{topicId} + Cookie: SESSION=<id>"
+    Backend -> Redis: โหลด session ด้วย session id
+
+    no_session: "[ไม่มี session หรือหมดอายุ]" {
+        Redis -> Backend: ไม่มี
+        Backend -> Frontend: "401 Unauthorized"
+        Frontend -> CstuStudent: ไปหน้าเข้าสู่ระบบ
+    }
+
+    has_session: "[มี session]" {
+        Redis -> Backend: user id
+        Backend -> MySQL: ตรวจว่ามี topic
+
+        not_found: "[ไม่มี topic]" {
+            MySQL -> Backend: ไม่มี
+            Backend -> Frontend: "404 Not Found"
+            Frontend -> CstuStudent: แจ้งไม่พบ topic
+        }
+
+        found: "[มี topic]" {
+            MySQL -> Backend: มี
+            Backend -> MySQL: หา progress ด้วย (user id, topic id) / เพิ่มถ้ายังไม่มี
+            MySQL -> Backend: progress
+            Backend -> Frontend: "200 OK (ProgressDTO)"
+            Frontend -> CstuStudent: checkbox ติ๊กแล้ว
+        }
+    }
+}
+
+เอาติ๊กออก: {
+    CstuStudent -> Frontend: เอาติ๊กออกจาก checkbox ของ topic
+    Frontend -> Backend: "DELETE /progress/topics/{topicId} + Cookie: SESSION=<id>"
+    Backend -> Redis: โหลด session ด้วย session id
+
+    no_session: "[ไม่มี session หรือหมดอายุ]" {
+        Redis -> Backend: ไม่มี
+        Backend -> Frontend: "401 Unauthorized"
+        Frontend -> CstuStudent: ไปหน้าเข้าสู่ระบบ
+    }
+
+    has_session: "[มี session]" {
+        Redis -> Backend: user id
+        Backend -> MySQL: ลบ progress ด้วย (user id, topic id)
+        Backend -> Frontend: "204 No Content"
+        Frontend -> CstuStudent: checkbox ไม่ติ๊ก
+    }
+}

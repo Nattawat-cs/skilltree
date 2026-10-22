@@ -1,0 +1,47 @@
+vars: {
+    d2-config: {
+        layout-engine: elk
+    }
+}
+
+title: |md
+  # Overview Lv1 : layer ของระบบ (US1–US5)
+| {near: top-center}
+
+ViewContainer: "ViewContainer" {
+    style.stroke-dash: 3
+}
+ViewControllerContainer: "ViewControllerContainer" {
+    style.stroke-dash: 3
+}
+Controllers: "<<@RestController>>\nControllers\n(3 classes)"
+Services: "<<@Service>>\nServices\n(4 classes)"
+Clients: "<<@Component>>\nClients\n(1 class)"
+Mappers: "<<@Component>>\nMappers\n(3 classes)"
+Repositories: "<<JpaRepository>>\nRepositories\n(6 classes)"
+Entities: "<<@Entity>>\nEntities\n(8 classes)"
+DTOs: "<<record>>\nDTOs\n(12 classes)"
+
+ViewContainer -> ViewControllerContainer: uses {
+    style.stroke-dash: 3
+}
+ViewControllerContainer -> Controllers: "HTTP / JSON (DTO)" {
+    style.stroke-dash: 3
+}
+Controllers -> Services: calls
+Controllers -> DTOs: "receives / returns" {
+    style.stroke-dash: 3
+}
+Services -> Repositories: calls
+Services -> Mappers: uses
+Services -> Clients: calls
+Clients -> DTOs: creates {
+    style.stroke-dash: 3
+}
+Mappers -> Entities: reads {
+    style.stroke-dash: 3
+}
+Mappers -> DTOs: creates {
+    style.stroke-dash: 3
+}
+Repositories -> Entities: manages

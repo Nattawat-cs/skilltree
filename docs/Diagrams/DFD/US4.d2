@@ -1,0 +1,24 @@
+vars: { d2-config: { layout-engine: elk } }
+direction: right
+cstu_student: CSTU Students
+cstu_student.shape: person
+system4-1: 4.1 ตรวจสอบ session
+system4-1.shape: circle
+system4-2: 4.2 บันทึกความคืบหน้า
+system4-2.shape: circle
+sessions: D2 sessions (Redis)
+sessions.shape: cylinder
+topics: D4 topics (MySQL)
+topics.shape: cylinder
+progress: D5 progress (MySQL)
+progress.shape: cylinder
+cstu_student -> system4-1: topic id + ติ๊ก / เอาติ๊กออก + cookie (session id)
+system4-1 -> sessions: session id
+sessions -> system4-1: user id (ถ้ามี)
+system4-1 -> cstu_student: แจ้งให้เข้าสู่ระบบ (ไม่มี session หรือหมดอายุ)
+system4-1 -> system4-2: user id + topic id + ติ๊ก / เอาติ๊กออก
+system4-2 -> topics: ตรวจว่ามี topic id (เมื่อติ๊ก)
+topics -> system4-2: มี / ไม่มี
+system4-2 -> progress: เพิ่มแถว (user id, topic id, done_at) / ลบแถว
+progress -> system4-2: แถวเดิม (ถ้ามี)
+system4-2 -> cstu_student: สถานะ topic ล่าสุด / แจ้งไม่พบ topic

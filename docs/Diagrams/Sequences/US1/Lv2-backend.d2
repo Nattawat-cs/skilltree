@@ -1,0 +1,49 @@
+shape: sequence_diagram
+
+title: |md
+  # US1 Lv2 (Backend) : ดูภาพรวมเพื่อหารายวิชา (skill tree)
+| {near: top-center}
+
+Frontend: Frontend Container
+SpringSession: "<<filter>>\nSpring Session"
+CourseCtrl: "<<@RestController>>\nCourseController"
+CourseSvc: "<<@Service>>\nCourseService"
+CourseRepo: "<<JpaRepository>>\nCourseRepository"
+PrereqRepo: "<<JpaRepository>>\nPrerequisiteRepository"
+CourseMapper: "<<@Component>>\nCourseMapper"
+MySQL: MySQL Container {
+    shape: cylinder
+}
+Redis: Redis Container {
+    shape: cylinder
+}
+
+ดู skill tree: {
+    Frontend -> SpringSession: "GET /skill-tree"
+    SpringSession -> CourseCtrl: ส่งต่อ request
+    CourseCtrl -> CourseSvc: ขอ skill tree
+    CourseSvc -> Redis: หา SkillTreeDTO ใน cache
+
+    cache_hit: "[cache hit]" {
+        Redis -> CourseSvc: SkillTreeDTO
+    }
+
+    cache_miss: "[cache miss]" {
+        Redis -> CourseSvc: ไม่มี
+        CourseSvc -> CourseRepo: ขอรายวิชาทั้งหมด
+        CourseRepo -> MySQL: SQL query
+        MySQL -> CourseRepo: ผลลัพธ์
+        CourseRepo -> CourseSvc: List<Course>
+        CourseSvc -> PrereqRepo: ขอวิชาบังคับก่อนทั้งหมด
+        PrereqRepo -> MySQL: SQL query
+        MySQL -> PrereqRepo: ผลลัพธ์
+        PrereqRepo -> CourseSvc: List<Prerequisite>
+        CourseSvc -> CourseMapper: แปลง List<Course> + List<Prerequisite>
+        CourseMapper -> CourseSvc: SkillTreeDTO
+        CourseSvc -> Redis: "เก็บ SkillTreeDTO ลง cache (TTL 1 วัน)"
+    }
+
+    CourseSvc -> CourseCtrl: SkillTreeDTO
+    CourseCtrl -> SpringSession: "200 OK (SkillTreeDTO)"
+    SpringSession -> Frontend: "200 OK (SkillTreeDTO)"
+}

@@ -1,0 +1,73 @@
+vars: {
+    d2-config: {
+        layout-engine: elk
+    }
+}
+
+title: |md
+  # Overview Lv3 : class ทั้งหมดของ US1–US5 (field + method)
+| {near: top-center}
+
+ViewContainer: @components/views/viewContainer.viewContainer
+ViewControllerContainer: @components/views/viewControllerContainer.viewControllerContainer
+
+Controllers: Controllers {
+    AuthController: @components/controllers/authController.authController
+    CourseController: @components/controllers/courseController.courseController
+    ProgressController: @components/controllers/progressController.progressController
+}
+
+Services: Services {
+    AuthService: @components/services/authService.authService
+    UserService: @components/services/userService.userService
+    CourseService: @components/services/courseService.courseService
+    ProgressService: @components/services/progressService.progressService
+}
+
+Clients: Clients {
+    TuApiClient: @components/clients/tuApiClient.tuApiClient
+}
+
+Mappers: Mappers {
+    UserMapper: @components/mappers/userMapper.userMapper
+    CourseMapper: @components/mappers/courseMapper.courseMapper
+    ProgressMapper: @components/mappers/progressMapper.progressMapper
+}
+
+Repositories: Repositories {
+    UserRepository: @components/repositories/userRepository.userRepository
+    CourseRepository: @components/repositories/courseRepository.courseRepository
+    CourseTopicRepository: @components/repositories/courseTopicRepository.courseTopicRepository
+    PrerequisiteRepository: @components/repositories/prerequisiteRepository.prerequisiteRepository
+    TopicRepository: @components/repositories/topicRepository.topicRepository
+    ProgressRepository: @components/repositories/progressRepository.progressRepository
+}
+
+Entities: Entities {
+    User: @components/entities/user.user
+    Role: @components/enums/role.role
+    Course: @components/entities/course.course
+    CourseTopic: @components/entities/courseTopic.courseTopic
+    Topic: @components/entities/topic.topic
+    Prerequisite: @components/entities/prerequisite.prerequisite
+    Progress: @components/entities/progress.progress
+    ProgressId: @components/entities/progressId.progressId
+}
+
+DTOs: DTOs {
+    LoginRequestDTO: @components/dtos/loginRequestDTO.loginRequestDTO
+    TuVerifyRequestDTO: @components/dtos/tuVerifyRequestDTO.tuVerifyRequestDTO
+    TuVerifyResponseDTO: @components/dtos/tuVerifyResponseDTO.tuVerifyResponseDTO
+    UserDTO: @components/dtos/userDTO.userDTO
+    SkillTreeDTO: @components/dtos/skillTreeDTO.skillTreeDTO
+    CourseItemDTO: @components/dtos/courseItemDTO.courseItemDTO
+    PrerequisiteDTO: @components/dtos/prerequisiteDTO.prerequisiteDTO
+    CourseDetailDTO: @components/dtos/courseDetailDTO.courseDetailDTO
+    TopicItemDTO: @components/dtos/topicItemDTO.topicItemDTO
+    ProgressDTO: @components/dtos/progressDTO.progressDTO
+    CourseProgressCount: @components/dtos/courseProgressCount.courseProgressCount
+    CourseProgressDTO: @components/dtos/courseProgressDTO.courseProgressDTO
+}
+
+...@components/relations/overviewRelations
+...@components/relations/overviewDependencies

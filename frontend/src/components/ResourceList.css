@@ -1,0 +1,109 @@
+/* ========================================
+   รายการลิงก์แหล่งเรียน (ResourceList.jsx)
+   หน้าตาคล้าย .path-list ใน TopicDetail.css แต่เป็นลิงก์ออกไปข้างนอก
+======================================== */
+
+.resource-list {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+
+  margin: 0;
+  padding: 0;
+
+  list-style: none;
+}
+
+
+.resource-item {
+  display: flex;
+  align-items: flex-start;
+  gap: 10px;
+
+  padding: 9px 12px;
+
+  border: 1px solid #293344;
+  border-radius: 10px;
+
+  background: #10141d;
+
+  color: #ffffff;
+
+  text-decoration: none;
+}
+
+
+.resource-item:hover {
+  border-color: #435066;
+
+  background: #151a26;
+}
+
+
+/* ป้ายประเภท ซ้ายสุด */
+.resource-type {
+  flex-shrink: 0;
+
+  width: 52px;
+
+  padding: 2px 0;
+
+  border-radius: 5px;
+
+  background: #2a303e;
+
+  color: #c9cfdb;
+
+  font-size: 10px;
+  font-weight: 700;
+
+  text-align: center;
+}
+
+.resource-type.video {
+  background: #3b1d22;
+
+  color: #ff8a8a;
+}
+
+.resource-type.course {
+  background: #1d3b31;
+
+  color: #55d7bd;
+}
+
+.resource-type.book {
+  background: #2e2a1a;
+
+  color: #f0b52f;
+}
+
+.resource-type.search {
+  background: #1d2a3b;
+
+  color: #7fb2ff;
+}
+
+
+.resource-text {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+
+  min-width: 0;
+}
+
+
+.resource-title {
+  font-size: 13px;
+  font-weight: 600;
+}
+
+
+.resource-note {
+  color: #7f8999;
+
+  font-size: 11px;
+
+  line-height: 1.5;
+}
